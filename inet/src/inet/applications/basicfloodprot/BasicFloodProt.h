@@ -29,6 +29,8 @@
 #include <set>
 #include <queue>
 
+#include "inet/common/geometry/common/Coord.h"
+
 namespace inet {
 
 /**
@@ -62,7 +64,7 @@ class INET_API BasicFloodProt : public ApplicationBase, public UdpSocket::ICallb
   protected:
     virtual int numInitStages() const override { return NUM_INIT_STAGES; }
     virtual void initialize(int stage) override;
-    virtual void handleMessageWhenUp(cMessage *msg) override;
+    virtual void handleMessageWhenUp(cMessage *msg) override; //2
     virtual void finish() override;
     virtual void refreshDisplay() const override;
 
@@ -75,7 +77,7 @@ class INET_API BasicFloodProt : public ApplicationBase, public UdpSocket::ICallb
     virtual void processSend();
     virtual void processStop();
 
-    virtual void handleStartOperation(LifecycleOperation *operation) override;
+    virtual void handleStartOperation(LifecycleOperation *operation) override; //1
     virtual void handleStopOperation(LifecycleOperation *operation) override;
     virtual void handleCrashOperation(LifecycleOperation *operation) override;
 
@@ -84,6 +86,7 @@ class INET_API BasicFloodProt : public ApplicationBase, public UdpSocket::ICallb
     virtual void socketClosed(UdpSocket *socket) override;
     virtual L3Address getMyNetAddr() const;
     virtual void printMe() const;
+    virtual Coord getMyPosition() const;
 
   public:
     BasicFloodProt() {}

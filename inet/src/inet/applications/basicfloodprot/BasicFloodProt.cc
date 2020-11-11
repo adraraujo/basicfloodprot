@@ -31,6 +31,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include "inet/mobility/contract/IMobility.h"
+
 namespace inet {
 
 Define_Module(BasicFloodProt);
@@ -178,7 +180,7 @@ void BasicFloodProt::refreshDisplay() const {
 void BasicFloodProt::processPacket(Packet *pk) {
     emit(packetReceivedSignal, pk);
     EV_INFO << "Received packet: " << UdpSocket::getReceivedPacketInfo(pk)
-                   << endl;
+    << endl;
 
     const auto &payload2 = pk->removeAtBack();
     const Ptr<PathPayload> &result = dynamicPtrCast<PathPayload>(payload2);
@@ -230,8 +232,15 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
     for (int i = 0; i < interfaceTable->getNumInterfaces(); i++) {
         L3Address addr = interfaceTable->getInterface(i)->getIpv4Address();
         L3Address loopback = Ipv4Address::LOOPBACK_ADDRESS;
-        if (addr != loopback)
+        if (addr != loopback) {
             localAddress = addr;
+            if (par("enableSend")){
+                std::cout << "BasicFloodProt::handleStartOperation(...)" << endl;
+                std::cout << "Posicao: > "<< getMyPosition() << endl;
+                std::cout << "Origem: > " << localAddress << endl;
+            }
+        }
+
     }
 
 
@@ -240,7 +249,7 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
     socket.bind(
             *localAddress ?
                     L3AddressResolver().resolve(localAddress) : L3Address(),
-            localPort);
+                    localPort);
     setSocketOptions();
 
     if (par("enableSend")) {
@@ -250,7 +259,6 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
         if (result.isUnspecified())
             EV_ERROR << "cannot resolve destination address: " << dst << endl;
         destAddress = result;
-        printMe();
         std::cout << "Destino > " << destAddress << endl;
 
         simtime_t start = std::max(startTime, simTime());
@@ -273,6 +281,13 @@ void BasicFloodProt::handleCrashOperation(LifecycleOperation *operation) {
 L3Address BasicFloodProt::getMyNetAddr() const {
 
     return L3Address();
+}
+
+Coord BasicFloodProt::getMyPosition() const {
+    cModule *node = getContainingNode(this);
+    IMobility *mobilityModule = check_and_cast<IMobility*>(node->getSubmodule("mobility"));
+    Coord positionNode = mobilityModule->getCurrentPosition();
+    return positionNode;
 }
 
 } // namespace inet

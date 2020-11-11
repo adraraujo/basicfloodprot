@@ -1,4 +1,4 @@
-file 11751 1604144339                                           
+file 11751 1605110362                                           
 version 2
 run Ping1-0-20201031-08:38:50-92291
 attr configname Ping1
@@ -41,216 +41,215 @@ vector 0 BasicFloodProtNet.host[0].wlan[0].radio radioMode:vector ETV
 attr interpolationmode sample-hold
 attr source radioModeChanged
 attr title "Radio mode, vector"
+0	10008 24 0 0 0 0 3 0 2 2 4
 vector 1 BasicFloodProtNet.host[0].wlan[0].radio radioChannel:vector ETV
 attr interpolationmode sample-hold
 attr source radioChannelChanged
 attr title "Radio channel, vector"
+1	10032 8 0 0 0 0 1 0 0 0 0
 vector 2 BasicFloodProtNet.host[1].wlan[0].radio radioMode:vector ETV
 attr interpolationmode sample-hold
 attr source radioModeChanged
 attr title "Radio mode, vector"
+2	10040 68 0 21 0 1.797670308194 5 0 3 7 17
 vector 3 BasicFloodProtNet.host[1].wlan[0].radio radioChannel:vector ETV
 attr interpolationmode sample-hold
 attr source radioChannelChanged
 attr title "Radio channel, vector"
+3	10108 8 0 0 0 0 1 0 0 0 0
 vector 4 BasicFloodProtNet.host[0].wlan[0].radio receptionState:vector ETV
 attr interpolationmode sample-hold
 attr source receptionStateChanged
 attr title "Radio reception state, vector"
+4	10116 52 0 22 0 1.797670495401 3 1 3 5 11
 vector 5 BasicFloodProtNet.host[1].wlan[0].radio receptionState:vector ETV
 attr interpolationmode sample-hold
 attr source receptionStateChanged
 attr title "Radio reception state, vector"
+5	10168 52 0 21 0 1.797670308194 3 0 1 2 2
 vector 6 BasicFloodProtNet.host[0].wlan[0].mac.dcf.recoveryProcedure contentionWindowChanged:vector ETV
 attr interpolationmode sample-hold
 attr title "contention window, vector"
+6	10220 8 0 0 0 0 1 7 7 7 49
 vector 7 BasicFloodProtNet.host[1].wlan[0].mac.dcf.recoveryProcedure contentionWindowChanged:vector ETV
 attr interpolationmode sample-hold
 attr title "contention window, vector"
+7	10228 8 0 0 0 0 1 7 7 7 49
 vector 8 BasicFloodProtNet.host[1].app[0] packetSent:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSent
 attr title "packets sent, vector(packetBytes)"
+8	10236 23 6 6 1.796422308194 1.796422308194 1 200 200 200 40000
 vector 9 BasicFloodProtNet.host[1].udp packetSent:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSent
 attr title "packets sent, vector(packetBytes)"
+9	10259 23 7 7 1.796422308194 1.796422308194 1 208 208 208 43264
 vector 10 BasicFloodProtNet.host[1].lo[0].lo rcvdPkFromHl:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetReceivedFromUpper
 attr title "packets received from higher layer, vector(packetBytes)"
+10	10282 24 9 9 1.796422308194 1.796422308194 1 228 228 228 51984
 vector 11 BasicFloodProtNet.host[1].lo[0].lo passedUpPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToUpper
 attr title "packets passed to higher layer, vector(packetBytes)"
+11	10306 24 9 9 1.796422308194 1.796422308194 1 228 228 228 51984
 vector 12 BasicFloodProtNet.host[1].wlan[0].mac packetReceivedFromUpper:vector(packetBytes) ETV
 attr interpolationmode none
 attr title "packets received from upper layer, vector(packetBytes)"
+12	10330 25 12 12 1.796422308194 1.796422308194 1 236 236 236 55696
 vector 13 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.pendingQueue packetPushed:vector(packetBytes) ETV
 attr interpolationmode none
 attr title "packet pushed, vector(packetBytes)"
+13	10355 25 12 12 1.796422308194 1.796422308194 1 264 264 264 69696
 vector 14 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.pendingQueue queueLength:vector ETV
 attr interpolationmode sample-hold
 attr source "count(packetPushed) - count(packetPopped) - count(packetRemoved) - count(packetDropped)"
 attr title "queue length, vector"
+14	10380 46 12 16 1.796422308194 1.796422308194 2 0 1 1 1
 vector 15 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.contention backoffPeriodGenerated:vector ETV
 attr interpolationmode none
 attr title "backoff periods, vector"
+15	10426 23 12 12 1.796422308194 1.796422308194 1 5 5 5 25
 vector 16 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.contention backoffActive:vector ETV
 attr interpolationmode sample-hold
 attr source count(backoffStarted)-count(backoffStopped)
 attr title "backoff active, vector"
+16	10449 46 12 15 1.796422308194 1.796422308194 2 0 1 1 1
 vector 17 BasicFloodProtNet.host[1].udp packetReceived:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetReceived
 attr title "packets received, vector(packetBytes)"
+17	10495 25 13 13 1.796422308194 1.796422308194 1 208 208 208 43264
 vector 18 BasicFloodProtNet.host[1].udp passedUpPk:vector(count) ETV
 attr interpolationmode none
 attr source packetSentToUpper
 attr title "packets passed up, vector(count)"
+18	10520 23 13 13 1.796422308194 1.796422308194 1 1 1 1 1
 vector 19 BasicFloodProtNet.host[1].app[0] packetReceived:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetReceived
 attr title "packets received, vector(packetBytes)"
+19	10543 25 14 14 1.796422308194 1.796422308194 1 200 200 200 40000
 vector 20 BasicFloodProtNet.host[1].app[0] throughput:vector ETV
 attr source throughput(packetReceived)
 attr title "throughput, vector"
 attr unit bps
+20	10568 241 14 28 0.1 1.807670495401 19 0 16000 16000 256000000
 vector 21 BasicFloodProtNet.host[1].app[0] rcvdPkLifetime:vector ETV
 attr interpolationmode none
 attr source dataAge(packetReceived)
 attr title "received packet lifetime, vector"
 attr unit s
+21	10809 25 14 14 1.796422308194 1.796422308194 1 0.5 0.5 0.5 0.25
 vector 22 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.pendingQueue packetPopped:vector(packetBytes) ETV
 attr interpolationmode none
 attr title "packet popped, vector(packetBytes)"
+22	10834 25 16 16 1.796422308194 1.796422308194 1 264 264 264 69696
 vector 23 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.pendingQueue queueingTime:vector ETV
 attr interpolationmode none
 attr source queueingTime(packetPopped)
 attr title "queueing times, vector"
 attr unit s
+23	10859 23 16 16 1.796422308194 1.796422308194 1 0 0 0 0
 vector 24 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.inProgressFrames queueLength:vector ETV
 attr interpolationmode sample-hold
 attr source "count(packetEnqueued) - count(packetDequeued)"
 attr title "queue length, vector"
+24	10882 46 16 20 1.796422308194 1.797670308194 2 0 1 1 1
 vector 25 BasicFloodProtNet.host[1].wlan[0].mac.dcf datarateSelected:vector ETV
 attr interpolationmode none
 attr title "datarates selected, vector"
+25	10928 29 16 16 1.796422308194 1.796422308194 1 2000000 2000000 2000000 4000000000000
 vector 26 BasicFloodProtNet.host[1].wlan[0].mac packetSentToLower:vector(packetBytes) ETV
 attr interpolationmode none
 attr title "packets sent to lower layer, vector(packetBytes)"
+26	10957 25 16 16 1.796422308194 1.796422308194 1 264 264 264 69696
 vector 27 BasicFloodProtNet.host[1].wlan[0].mac.dcf frameSequenceActive:vector ETV
 attr interpolationmode sample-hold
 attr source count(frameSequenceStarted)-count(frameSequenceFinished)
 attr title "frame sequence active, vector"
+27	10982 46 16 20 1.796422308194 1.797670308194 2 0 1 1 1
 vector 28 BasicFloodProtNet.host[1].wlan[0].radio transmissionState:vector ETV
 attr interpolationmode sample-hold
 attr source transmissionStateChanged
 attr title "Radio transmission state, vector"
+28	11028 92 17 21 1.796422308194 1.797670308194 4 0 2 4 6
 vector 29 BasicFloodProtNet.host[1].wlan[0].mac.dcf packetSentToPeer:vector(packetBytes) ETV
 attr interpolationmode none
 attr title "packets sent, vector(packetBytes)"
+29	11120 25 20 20 1.797670308194 1.797670308194 1 264 264 264 69696
 vector 30 BasicFloodProtNet.host[1].wlan[0].mac.dcf packetSentToPeerMulticast:vector(packetBytes) ETV
 attr interpolationmode none
 attr source ieee80211Multicast(packetSentToPeer)
 attr title "packets sent: multicast, vector(packetBytes)"
+30	11145 25 20 20 1.797670308194 1.797670308194 1 264 264 264 69696
 vector 31 BasicFloodProtNet.host[1].wlan[0].mac.dcf packetSentToPeerBroadcast:vector(packetBytes) ETV
 attr interpolationmode none
 attr source ieee80211Broadcast(packetSentToPeer)
 attr title "packets sent: broadcast , vector(packetBytes)"
+31	11170 25 20 20 1.797670308194 1.797670308194 1 264 264 264 69696
 vector 32 BasicFloodProtNet.host[1].wlan[0].mac.dcf packetSentToPeerWithoutRetry:vector(packetBytes) ETV
 attr interpolationmode none
 attr source ieee80211NotRetry(packetSentToPeer)
 attr title "packets sent: without retry, vector(packetBytes)"
+32	11195 25 20 20 1.797670308194 1.797670308194 1 264 264 264 69696
 vector 33 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.inProgressFrames queueingTime:vector ETV
 attr interpolationmode none
 attr source queueingTime(packetDequeued)
 attr title "queueing times, vector"
+33	11220 30 20 20 1.797670308194 1.797670308194 1 0.001248 0.001248 0.001248 1.557504e-006
 vector 34 BasicFloodProtNet.host[0].wlan[0].mac packetReceivedFromLower:vector(packetBytes) ETV
 attr interpolationmode none
 attr title "packets received from lower layer, vector(packetBytes)"
+34	11250 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
 vector 35 BasicFloodProtNet.host[0].wlan[0].mac.dcf packetReceivedFromPeer:vector(packetBytes) ETV
 attr interpolationmode none
 attr title "packets received, vector(packetBytes)"
+35	11275 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
 vector 36 BasicFloodProtNet.host[0].wlan[0].mac.dcf packetReceivedFromPeerMulticast:vector(packetBytes) ETV
 attr interpolationmode none
 attr source ieee80211Multicast(packetReceivedFromPeer)
 attr title "packets received: multicast, vector(packetBytes)"
+36	11300 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
 vector 37 BasicFloodProtNet.host[0].wlan[0].mac.dcf packetReceivedFromPeerBroadcast:vector(packetBytes) ETV
 attr interpolationmode none
 attr source ieee80211Broadcast(packetReceivedFromPeer)
 attr title "packets received: broadcast, vector(packetBytes)"
+37	11325 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
 vector 38 BasicFloodProtNet.host[0].wlan[0].mac.dcf packetReceivedFromPeerWithoutRetry:vector(packetBytes) ETV
 attr interpolationmode none
 attr source ieee80211NotRetry(packetReceivedFromPeer)
 attr title "packets received: without retry, vector(packetBytes)"
+38	11350 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
 vector 39 BasicFloodProtNet.host[0].wlan[0].mac packetSentToUpper:vector(packetBytes) ETV
 attr interpolationmode none
 attr title "packets sent to upper layer, vector(packetBytes)"
+39	11375 25 23 23 1.797670495401 1.797670495401 1 236 236 236 55696
 vector 40 BasicFloodProtNet.host[0].udp packetReceived:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetReceived
 attr title "packets received, vector(packetBytes)"
+40	11400 25 26 26 1.797670495401 1.797670495401 1 208 208 208 43264
 vector 41 BasicFloodProtNet.host[0].udp passedUpPk:vector(count) ETV
 attr interpolationmode none
 attr source packetSentToUpper
 attr title "packets passed up, vector(count)"
+41	11425 23 26 26 1.797670495401 1.797670495401 1 1 1 1 1
 vector 42 BasicFloodProtNet.host[0].app[0] packetReceived:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetReceived
 attr title "packets received, vector(packetBytes)"
+42	11448 25 27 27 1.797670495401 1.797670495401 1 200 200 200 40000
 vector 43 BasicFloodProtNet.host[0].app[0] throughput:vector ETV
 attr source throughput(packetReceived)
 attr title "throughput, vector"
 attr unit bps
+43	11473 241 27 28 0.1 1.807670495401 19 0 16000 16000 256000000
 vector 44 BasicFloodProtNet.host[0].app[0] rcvdPkLifetime:vector ETV
 attr interpolationmode none
 attr source dataAge(packetReceived)
 attr title "received packet lifetime, vector"
 attr unit s
-0	10008 24 0 0 0 0 3 0 2 2 4
-1	10032 8 0 0 0 0 1 0 0 0 0
-2	10040 68 0 21 0 1.797670308194 5 0 3 7 17
-3	10108 8 0 0 0 0 1 0 0 0 0
-4	10116 52 0 22 0 1.797670495401 3 1 3 5 11
-5	10168 52 0 21 0 1.797670308194 3 0 1 2 2
-6	10220 8 0 0 0 0 1 7 7 7 49
-7	10228 8 0 0 0 0 1 7 7 7 49
-8	10236 23 6 6 1.796422308194 1.796422308194 1 200 200 200 40000
-9	10259 23 7 7 1.796422308194 1.796422308194 1 208 208 208 43264
-10	10282 24 9 9 1.796422308194 1.796422308194 1 228 228 228 51984
-11	10306 24 9 9 1.796422308194 1.796422308194 1 228 228 228 51984
-12	10330 25 12 12 1.796422308194 1.796422308194 1 236 236 236 55696
-13	10355 25 12 12 1.796422308194 1.796422308194 1 264 264 264 69696
-14	10380 46 12 16 1.796422308194 1.796422308194 2 0 1 1 1
-15	10426 23 12 12 1.796422308194 1.796422308194 1 5 5 5 25
-16	10449 46 12 15 1.796422308194 1.796422308194 2 0 1 1 1
-17	10495 25 13 13 1.796422308194 1.796422308194 1 208 208 208 43264
-18	10520 23 13 13 1.796422308194 1.796422308194 1 1 1 1 1
-19	10543 25 14 14 1.796422308194 1.796422308194 1 200 200 200 40000
-20	10568 241 14 28 0.1 1.807670495401 19 0 16000 16000 256000000
-21	10809 25 14 14 1.796422308194 1.796422308194 1 0.5 0.5 0.5 0.25
-22	10834 25 16 16 1.796422308194 1.796422308194 1 264 264 264 69696
-23	10859 23 16 16 1.796422308194 1.796422308194 1 0 0 0 0
-24	10882 46 16 20 1.796422308194 1.797670308194 2 0 1 1 1
-25	10928 29 16 16 1.796422308194 1.796422308194 1 2000000 2000000 2000000 4000000000000
-26	10957 25 16 16 1.796422308194 1.796422308194 1 264 264 264 69696
-27	10982 46 16 20 1.796422308194 1.797670308194 2 0 1 1 1
-28	11028 92 17 21 1.796422308194 1.797670308194 4 0 2 4 6
-29	11120 25 20 20 1.797670308194 1.797670308194 1 264 264 264 69696
-30	11145 25 20 20 1.797670308194 1.797670308194 1 264 264 264 69696
-31	11170 25 20 20 1.797670308194 1.797670308194 1 264 264 264 69696
-32	11195 25 20 20 1.797670308194 1.797670308194 1 264 264 264 69696
-33	11220 30 20 20 1.797670308194 1.797670308194 1 0.001248 0.001248 0.001248 1.557504e-06
-34	11250 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
-35	11275 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
-36	11300 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
-37	11325 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
-38	11350 25 23 23 1.797670495401 1.797670495401 1 264 264 264 69696
-39	11375 25 23 23 1.797670495401 1.797670495401 1 236 236 236 55696
-40	11400 25 26 26 1.797670495401 1.797670495401 1 208 208 208 43264
-41	11425 23 26 26 1.797670495401 1.797670495401 1 1 1 1 1
-42	11448 25 27 27 1.797670495401 1.797670495401 1 200 200 200 40000
-43	11473 241 27 28 0.1 1.807670495401 19 0 16000 16000 256000000
-44	11714 36 27 27 1.797670495401 1.797670495401 1 0.501248187207 0.501248187207 0.501248187207 0.2512497451783
-
+44	11714 37 27 27 1.797670495401 1.797670495401 1 0.501248187207 0.501248187207 0.501248187207 0.2512497451783
