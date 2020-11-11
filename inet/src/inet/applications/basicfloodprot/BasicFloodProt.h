@@ -28,17 +28,20 @@
 #include "inet/networklayer/contract/IInterfaceTable.h"
 #include <set>
 #include <queue>
+#include <list>
 
 #include "inet/common/geometry/common/Coord.h"
 
 namespace inet {
+
+class NodeInfo;
 
 /**
  * UDP application. See NED for more info.
  */
 class INET_API BasicFloodProt : public ApplicationBase, public UdpSocket::ICallback
 {
-  protected:
+protected:
     enum SelfMsgKinds { START = 1, SEND, STOP };
 
     // parameters
@@ -51,6 +54,8 @@ class INET_API BasicFloodProt : public ApplicationBase, public UdpSocket::ICallb
     std::set<int> activeFlows;
     std::queue<Packet*> queue; //Fila de envio de pacotes
 
+
+
     // state
     UdpSocket socket;
     cMessage *selfMsg = nullptr;
@@ -60,8 +65,12 @@ class INET_API BasicFloodProt : public ApplicationBase, public UdpSocket::ICallb
     int numReceived = 0;
     IInterfaceTable *interfaceTable = nullptr;
     L3Address localAddress;
+private:
+    NodeInfo *ownNodeInfo;
+    std::list<NodeInfo*> allNodeInfoList;
 
-  protected:
+
+protected:
     virtual int numInitStages() const override { return NUM_INIT_STAGES; }
     virtual void initialize(int stage) override;
     virtual void handleMessageWhenUp(cMessage *msg) override; //2
@@ -88,12 +97,12 @@ class INET_API BasicFloodProt : public ApplicationBase, public UdpSocket::ICallb
     virtual void printMe() const;
     virtual Coord getMyPosition() const;
 
-  public:
+public:
     BasicFloodProt() {}
     ~BasicFloodProt();
 };
 
-} // namespace inet
 
+} // namespace inet
 #endif // ifndef __INET_BasicFloodProt_H
 

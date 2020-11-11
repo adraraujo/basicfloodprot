@@ -32,6 +32,7 @@
 #include <algorithm>
 
 #include "inet/mobility/contract/IMobility.h"
+#include "NodeInfo.h"
 
 namespace inet {
 
@@ -47,9 +48,7 @@ void BasicFloodProt::printMe() const {
 
 void BasicFloodProt::initialize(int stage) {
     ApplicationBase::initialize(stage);
-
     if (stage == INITSTAGE_LOCAL) {
-
         numSent = 0;
         numReceived = 0;
         WATCH(numSent);
@@ -189,7 +188,7 @@ void BasicFloodProt::processPacket(Packet *pk) {
     Path currentPath = result->getPath();
     numReceived++;
     if (localAddress == target) {
-        std::cout << "!!!!!!!!!!!!Destino alcanÃ§ado" << endl;
+        std::cout << "!!!!!!!!!!!!Destino alcançado" << endl;
         std::cout << "Caminho Percorrido: " << endl;
         std::for_each(currentPath.begin(), currentPath.end(), [](L3Address &addr) {
             std::cout << addr << " -> ";
@@ -234,6 +233,13 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
         L3Address loopback = Ipv4Address::LOOPBACK_ADDRESS;
         if (addr != loopback) {
             localAddress = addr;
+
+            ownNodeInfo->ip = localAddress;
+            ownNodeInfo->position = getMyPosition();
+
+            allNodeInfoList.push_back(ownNodeInfo);
+
+
             if (par("enableSend")){
                 std::cout << "BasicFloodProt::handleStartOperation(...)" << endl;
                 std::cout << "Posicao: > "<< getMyPosition() << endl;

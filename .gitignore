@@ -12,3 +12,4 @@ inet/src/inet/*
 !inet/src/inet/applications
 inet/src/inet/applications/*
 !inet/src/inet/applications/basicfloodprot
+inet/src/inet/applications/basicfloodprot/results

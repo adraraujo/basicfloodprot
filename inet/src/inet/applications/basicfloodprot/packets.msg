@@ -31,7 +31,6 @@ class Path {
 class L3Address {
     @existingClass;
 }
-
 //
 // TODO generated message class
 //

@@ -42,7 +42,7 @@ typedef std::vector<inet::L3Address> Path;
 // }}
 
 /**
- * Class generated from <tt>inet/applications/basicfloodprot/packets.msg:39</tt> by nedtool.
+ * Class generated from <tt>inet/applications/basicfloodprot/packets.msg:38</tt> by nedtool.
  * <pre>
  * //
  * // TODO generated message class
