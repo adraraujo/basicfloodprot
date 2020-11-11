@@ -1,0 +1,308 @@
+version 2
+run Ping1-0-20201031-08:38:50-92291
+attr configname Ping1
+attr datetime 20201031-08:38:50
+attr experiment Ping1
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsf ""
+attr measurement ""
+attr network BasicFloodProtNet
+attr processid 92291
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+param *.numHosts 2
+param **.constraintAreaMinX 0m
+param **.constraintAreaMinY 0m
+param **.constraintAreaMinZ 0m
+param **.constraintAreaMaxX 50m
+param **.constraintAreaMaxY 50m
+param **.constraintAreaMaxZ 0m
+param **.host*.mobility.typename "\"StationaryMobility\""
+param **.host*.mobility.initFromDisplayString false
+param *.host[*].numApps 1
+param *.host[*].app[*].typename "\"BasicFloodProt\""
+param *.host[1].app[*].destAddress "\"host[0]\""
+param *.host[1].app[*].enableSend true
+param *.host[1].app[*].flowId 1
+param *.host[*].app[0].startTime "uniform(1s, 1.5s)"
+param **.limitedBroadcast true
+param **.wlan[*].bitrate 2Mbps
+param **.wlan[*].mac.dcf.channelAccess.cwMin 7
+param **.wlan[*].radio.transmitter.power 2mW
+param **.wlan[*].radio.receiver.sensitivity -85dBm
+param **.wlan[*].radio.receiver.snirThreshold 4dB
+
+vector 0 BasicFloodProtNet.host[0].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 1 BasicFloodProtNet.host[0].wlan[0].radio radioChannel:vector ETV
+attr interpolationmode sample-hold
+attr source radioChannelChanged
+attr title "Radio channel, vector"
+vector 2 BasicFloodProtNet.host[1].wlan[0].radio radioMode:vector ETV
+attr interpolationmode sample-hold
+attr source radioModeChanged
+attr title "Radio mode, vector"
+vector 3 BasicFloodProtNet.host[1].wlan[0].radio radioChannel:vector ETV
+attr interpolationmode sample-hold
+attr source radioChannelChanged
+attr title "Radio channel, vector"
+vector 4 BasicFloodProtNet.host[0].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 5 BasicFloodProtNet.host[1].wlan[0].radio receptionState:vector ETV
+attr interpolationmode sample-hold
+attr source receptionStateChanged
+attr title "Radio reception state, vector"
+vector 6 BasicFloodProtNet.host[0].wlan[0].mac.dcf.recoveryProcedure contentionWindowChanged:vector ETV
+attr interpolationmode sample-hold
+attr title "contention window, vector"
+vector 7 BasicFloodProtNet.host[1].wlan[0].mac.dcf.recoveryProcedure contentionWindowChanged:vector ETV
+attr interpolationmode sample-hold
+attr title "contention window, vector"
+vector 8 BasicFloodProtNet.host[1].app[0] packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, vector(packetBytes)"
+vector 9 BasicFloodProtNet.host[1].udp packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, vector(packetBytes)"
+vector 10 BasicFloodProtNet.host[1].lo[0].lo rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, vector(packetBytes)"
+vector 11 BasicFloodProtNet.host[1].lo[0].lo passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, vector(packetBytes)"
+vector 12 BasicFloodProtNet.host[1].wlan[0].mac packetReceivedFromUpper:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packets received from upper layer, vector(packetBytes)"
+vector 13 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.pendingQueue packetPushed:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet pushed, vector(packetBytes)"
+vector 14 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.pendingQueue queueLength:vector ETV
+attr interpolationmode sample-hold
+attr source "count(packetPushed) - count(packetPopped) - count(packetRemoved) - count(packetDropped)"
+attr title "queue length, vector"
+vector 15 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.contention backoffPeriodGenerated:vector ETV
+attr interpolationmode none
+attr title "backoff periods, vector"
+vector 16 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.contention backoffActive:vector ETV
+attr interpolationmode sample-hold
+attr source count(backoffStarted)-count(backoffStopped)
+attr title "backoff active, vector"
+vector 17 BasicFloodProtNet.host[1].udp packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, vector(packetBytes)"
+vector 18 BasicFloodProtNet.host[1].udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed up, vector(count)"
+vector 19 BasicFloodProtNet.host[1].app[0] packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, vector(packetBytes)"
+vector 20 BasicFloodProtNet.host[1].app[0] throughput:vector ETV
+attr source throughput(packetReceived)
+attr title "throughput, vector"
+attr unit bps
+vector 21 BasicFloodProtNet.host[1].app[0] rcvdPkLifetime:vector ETV
+attr interpolationmode none
+attr source dataAge(packetReceived)
+attr title "received packet lifetime, vector"
+attr unit s
+vector 22 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.pendingQueue packetPopped:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packet popped, vector(packetBytes)"
+vector 23 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.pendingQueue queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetPopped)
+attr title "queueing times, vector"
+attr unit s
+vector 24 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.inProgressFrames queueLength:vector ETV
+attr interpolationmode sample-hold
+attr source "count(packetEnqueued) - count(packetDequeued)"
+attr title "queue length, vector"
+vector 25 BasicFloodProtNet.host[1].wlan[0].mac.dcf datarateSelected:vector ETV
+attr interpolationmode none
+attr title "datarates selected, vector"
+vector 26 BasicFloodProtNet.host[1].wlan[0].mac packetSentToLower:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packets sent to lower layer, vector(packetBytes)"
+vector 27 BasicFloodProtNet.host[1].wlan[0].mac.dcf frameSequenceActive:vector ETV
+attr interpolationmode sample-hold
+attr source count(frameSequenceStarted)-count(frameSequenceFinished)
+attr title "frame sequence active, vector"
+vector 28 BasicFloodProtNet.host[1].wlan[0].radio transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "Radio transmission state, vector"
+vector 29 BasicFloodProtNet.host[1].wlan[0].mac.dcf packetSentToPeer:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packets sent, vector(packetBytes)"
+vector 30 BasicFloodProtNet.host[1].wlan[0].mac.dcf packetSentToPeerMulticast:vector(packetBytes) ETV
+attr interpolationmode none
+attr source ieee80211Multicast(packetSentToPeer)
+attr title "packets sent: multicast, vector(packetBytes)"
+vector 31 BasicFloodProtNet.host[1].wlan[0].mac.dcf packetSentToPeerBroadcast:vector(packetBytes) ETV
+attr interpolationmode none
+attr source ieee80211Broadcast(packetSentToPeer)
+attr title "packets sent: broadcast , vector(packetBytes)"
+vector 32 BasicFloodProtNet.host[1].wlan[0].mac.dcf packetSentToPeerWithoutRetry:vector(packetBytes) ETV
+attr interpolationmode none
+attr source ieee80211NotRetry(packetSentToPeer)
+attr title "packets sent: without retry, vector(packetBytes)"
+vector 33 BasicFloodProtNet.host[1].wlan[0].mac.dcf.channelAccess.inProgressFrames queueingTime:vector ETV
+attr interpolationmode none
+attr source queueingTime(packetDequeued)
+attr title "queueing times, vector"
+vector 34 BasicFloodProtNet.host[0].wlan[0].mac packetReceivedFromLower:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packets received from lower layer, vector(packetBytes)"
+vector 35 BasicFloodProtNet.host[0].wlan[0].mac.dcf packetReceivedFromPeer:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packets received, vector(packetBytes)"
+vector 36 BasicFloodProtNet.host[0].wlan[0].mac.dcf packetReceivedFromPeerMulticast:vector(packetBytes) ETV
+attr interpolationmode none
+attr source ieee80211Multicast(packetReceivedFromPeer)
+attr title "packets received: multicast, vector(packetBytes)"
+vector 37 BasicFloodProtNet.host[0].wlan[0].mac.dcf packetReceivedFromPeerBroadcast:vector(packetBytes) ETV
+attr interpolationmode none
+attr source ieee80211Broadcast(packetReceivedFromPeer)
+attr title "packets received: broadcast, vector(packetBytes)"
+vector 38 BasicFloodProtNet.host[0].wlan[0].mac.dcf packetReceivedFromPeerWithoutRetry:vector(packetBytes) ETV
+attr interpolationmode none
+attr source ieee80211NotRetry(packetReceivedFromPeer)
+attr title "packets received: without retry, vector(packetBytes)"
+vector 39 BasicFloodProtNet.host[0].wlan[0].mac packetSentToUpper:vector(packetBytes) ETV
+attr interpolationmode none
+attr title "packets sent to upper layer, vector(packetBytes)"
+vector 40 BasicFloodProtNet.host[0].udp packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, vector(packetBytes)"
+vector 41 BasicFloodProtNet.host[0].udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed up, vector(count)"
+vector 42 BasicFloodProtNet.host[0].app[0] packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, vector(packetBytes)"
+vector 43 BasicFloodProtNet.host[0].app[0] throughput:vector ETV
+attr source throughput(packetReceived)
+attr title "throughput, vector"
+attr unit bps
+vector 44 BasicFloodProtNet.host[0].app[0] rcvdPkLifetime:vector ETV
+attr interpolationmode none
+attr source dataAge(packetReceived)
+attr title "received packet lifetime, vector"
+attr unit s
+0	0	0	0
+0	0	0	0
+0	0	0	2
+1	0	0	0
+2	0	0	0
+2	0	0	0
+2	0	0	2
+2	17	1.796422308194	3
+2	21	1.797670308194	2
+3	0	0	0
+4	0	0	1
+4	19	1.796422495401	3
+4	22	1.797670495401	1
+5	0	0	1
+5	17	1.796422308194	0
+5	21	1.797670308194	1
+6	0	0	7
+7	0	0	7
+8	6	1.796422308194	200
+9	7	1.796422308194	208
+10	9	1.796422308194	228
+11	9	1.796422308194	228
+12	12	1.796422308194	236
+13	12	1.796422308194	264
+14	12	1.796422308194	1
+14	16	1.796422308194	0
+15	12	1.796422308194	5
+16	12	1.796422308194	1
+16	15	1.796422308194	0
+17	13	1.796422308194	208
+18	13	1.796422308194	1
+19	14	1.796422308194	200
+20	14	0.1	0
+20	14	0.2	0
+20	14	0.3	0
+20	14	0.4	0
+20	14	0.5	0
+20	14	0.6	0
+20	14	0.7	0
+20	14	0.8	0
+20	14	0.9	0
+20	14	1	0
+20	14	1.1	0
+20	14	1.2	0
+20	14	1.3	0
+20	14	1.4	0
+20	14	1.5	0
+20	14	1.6	0
+20	14	1.7	0
+20	28	1.8	16000
+20	28	1.807670495401	0
+21	14	1.796422308194	0.5
+22	16	1.796422308194	264
+23	16	1.796422308194	0
+24	16	1.796422308194	1
+24	20	1.797670308194	0
+25	16	1.796422308194	2000000
+26	16	1.796422308194	264
+27	16	1.796422308194	1
+27	20	1.797670308194	0
+28	17	1.796422308194	1
+28	18	1.796422308194	2
+28	20	1.797670308194	1
+28	21	1.797670308194	0
+29	20	1.797670308194	264
+30	20	1.797670308194	264
+31	20	1.797670308194	264
+32	20	1.797670308194	264
+33	20	1.797670308194	0.001248
+34	23	1.797670495401	264
+35	23	1.797670495401	264
+36	23	1.797670495401	264
+37	23	1.797670495401	264
+38	23	1.797670495401	264
+39	23	1.797670495401	236
+40	26	1.797670495401	208
+41	26	1.797670495401	1
+42	27	1.797670495401	200
+43	27	0.1	0
+43	27	0.2	0
+43	27	0.3	0
+43	27	0.4	0
+43	27	0.5	0
+43	27	0.6	0
+43	27	0.7	0
+43	27	0.8	0
+43	27	0.9	0
+43	27	1	0
+43	27	1.1	0
+43	27	1.2	0
+43	27	1.3	0
+43	27	1.4	0
+43	27	1.5	0
+43	27	1.6	0
+43	27	1.7	0
+43	28	1.8	16000
+43	28	1.807670495401	0
+44	27	1.797670495401	0.501248187207
+

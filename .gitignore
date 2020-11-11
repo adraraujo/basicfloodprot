@@ -1,3 +1,14 @@
 /*
+!inet
+inet/*
+!inet/examples
+inet/examples/*
 !inet/examples/basicfloodprot
+
+!inet/src
+inet/src/*
+!inet/src/inet
+inet/src/inet/*
+!inet/src/inet/applications
+inet/src/inet/applications/*
 !inet/src/inet/applications/basicfloodprot
