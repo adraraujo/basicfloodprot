@@ -66,9 +66,18 @@ void BasicFloodProt::initialize(int stage) {
 }
 
 void BasicFloodProt::finish() {
-    recordScalar("packets sent", numSent);
-    recordScalar("packets received", numReceived);
-    ApplicationBase::finish();
+
+    std::list<NodeInfo*>::iterator iteratorAllNodeInfo = allNodeInfoList.begin();
+    while (iteratorAllNodeInfo != allNodeInfoList.end()) {
+        NodeInfo *nodeInfo = *iteratorAllNodeInfo;
+        std::cout << nodeInfo->ip << " - " << nodeInfo->position << endl;
+        iteratorAllNodeInfo++;
+    }
+
+
+        recordScalar("packets sent", numSent);
+        recordScalar("packets received", numReceived);
+        ApplicationBase::finish();
 }
 
 void BasicFloodProt::setSocketOptions() {
@@ -234,6 +243,7 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
         if (addr != loopback) {
             localAddress = addr;
 
+            ownNodeInfo = new NodeInfo;
             ownNodeInfo->ip = localAddress;
             ownNodeInfo->position = getMyPosition();
 

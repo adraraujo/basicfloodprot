@@ -8,12 +8,12 @@
 #ifndef INET_NODEINFO_H_
 #define INET_NODEINFO_H_
 
-//#include "inet/common/INETDefs.h"
+#include "inet/common/INETDefs.h"
 
 #include "inet/networklayer/common/L3Address.h"
 #include "inet/common/geometry/common/Coord.h"
 
-//#include "BasicFloodProt.h"
+#include "BasicFloodProt.h"
 
 
 namespace inet {

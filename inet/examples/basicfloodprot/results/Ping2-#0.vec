@@ -1,14 +1,14 @@
 version 2
-run Ping2-0-20201111-14:26:58-26568
+run Ping2-0-20201111-20:12:10-21528
 attr configname Ping2
-attr datetime 20201111-14:26:58
+attr datetime 20201111-20:12:10
 attr experiment Ping2
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvarsf ""
 attr measurement ""
 attr network BasicFloodProtNet
-attr processid 26568
+attr processid 21528
 attr repetition 0
 attr replication #0
 attr resultdir results

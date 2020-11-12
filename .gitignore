@@ -4,6 +4,7 @@ inet/*
 !inet/examples
 inet/examples/*
 !inet/examples/basicfloodprot
+inet/examples/basicfloodprot/results
 
 !inet/src
 inet/src/*
@@ -12,4 +13,3 @@ inet/src/inet/*
 !inet/src/inet/applications
 inet/src/inet/applications/*
 !inet/src/inet/applications/basicfloodprot
-inet/src/inet/applications/basicfloodprot/results
