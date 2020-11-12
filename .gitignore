@@ -4,7 +4,8 @@ inet/*
 !inet/examples
 inet/examples/*
 !inet/examples/basicfloodprot
-inet/examples/basicfloodprot/*
+inet/examples/basicfloodprot/results*
+
 
 !inet/src
 inet/src/*
