@@ -1,15 +1,15 @@
-file 4316 1605136342                                            
+                                                                
 version 2
-run Ping2-0-20201111-20:12:10-21528
+run Ping2-0-20201111-21:51:01-7728
 attr configname Ping2
-attr datetime 20201111-20:12:10
+attr datetime 20201111-21:51:01
 attr experiment Ping2
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvarsf ""
 attr measurement ""
 attr network BasicFloodProtNet
-attr processid 21528
+attr processid 7728
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -96,20 +96,19 @@ attr title "contention window, vector"
 vector 15 BasicFloodProtNet.host[3].wlan[0].mac.dcf.recoveryProcedure contentionWindowChanged:vector ETV
 attr interpolationmode sample-hold
 attr title "contention window, vector"
-0	4092 27 0 0 0 0 3 0 2 2 4
-1	4119 9 0 0 0 0 1 0 0 0 0
-2	4128 27 0 0 0 0 3 0 2 2 4
-3	4155 9 0 0 0 0 1 0 0 0 0
-4	4164 27 0 0 0 0 3 0 2 2 4
-5	4191 9 0 0 0 0 1 0 0 0 0
-6	4200 27 0 0 0 0 3 0 2 2 4
-7	4227 9 0 0 0 0 1 0 0 0 0
-8	4236 9 0 0 0 0 1 1 1 1 1
-9	4245 9 0 0 0 0 1 1 1 1 1
-10	4254 10 0 0 0 0 1 1 1 1 1
-11	4264 10 0 0 0 0 1 1 1 1 1
-12	4274 10 0 0 0 0 1 7 7 7 49
-13	4284 10 0 0 0 0 1 7 7 7 49
-14	4294 10 0 0 0 0 1 7 7 7 49
-15	4304 10 0 0 0 0 1 7 7 7 49
-
+0	4090 27 0 0 0 0 3 0 2 2 4
+1	4117 9 0 0 0 0 1 0 0 0 0
+2	4126 27 0 0 0 0 3 0 2 2 4
+3	4153 9 0 0 0 0 1 0 0 0 0
+4	4162 27 0 0 0 0 3 0 2 2 4
+5	4189 9 0 0 0 0 1 0 0 0 0
+6	4198 27 0 0 0 0 3 0 2 2 4
+7	4225 9 0 0 0 0 1 0 0 0 0
+8	4234 9 0 0 0 0 1 1 1 1 1
+9	4243 9 0 0 0 0 1 1 1 1 1
+10	4252 10 0 0 0 0 1 1 1 1 1
+11	4262 10 0 0 0 0 1 1 1 1 1
+12	4272 10 0 0 0 0 1 7 7 7 49
+13	4282 10 0 0 0 0 1 7 7 7 49
+14	4292 10 0 0 0 0 1 7 7 7 49
+15	4302 10 0 0 0 0 1 7 7 7 49
