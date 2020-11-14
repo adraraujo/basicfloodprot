@@ -32,11 +32,15 @@
 #include <algorithm>
 
 #include "inet/mobility/contract/IMobility.h"
-#include "NodeInfo.h"
+
+#include "EstdBandwidth.h"
+
 
 namespace inet {
 
 Define_Module(BasicFloodProt);
+
+cGlobalRegistrationList nodeinfo_s("nodeinfo_s");
 
 BasicFloodProt::~BasicFloodProt() {
     cancelAndDelete(selfMsg);
@@ -49,6 +53,9 @@ void BasicFloodProt::printMe() const {
 void BasicFloodProt::initialize(int stage) {
     ApplicationBase::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
+        printMe();
+        std::cout << "BasicFloodProt::initialize(...)" << endl;
+
         numSent = 0;
         numReceived = 0;
         WATCH(numSent);
@@ -60,27 +67,21 @@ void BasicFloodProt::initialize(int stage) {
         destPort = par("destPort");
         startTime = par("startTime");
         packetName = par("packetName");
-
         selfMsg = new cMessage("sendTimer");
     }
 }
 
 void BasicFloodProt::finish() {
+    printMe();
+    std::cout << "BasicFloodProt::finish()" << endl;
 
-    std::list<NodeInfo*>::iterator iteratorAllNodeInfo = allNodeInfoList.begin();
-    while (iteratorAllNodeInfo != allNodeInfoList.end()) {
-        NodeInfo *nodeInfo = *iteratorAllNodeInfo;
-        std::cout << nodeInfo->ip << " - " << nodeInfo->position << endl;
-        iteratorAllNodeInfo++;
-    }
-
-
-        recordScalar("packets sent", numSent);
-        recordScalar("packets received", numReceived);
-        ApplicationBase::finish();
+    recordScalar("packets sent", numSent);
+    recordScalar("packets received", numReceived);
+    ApplicationBase::finish();
 }
 
 void BasicFloodProt::setSocketOptions() {
+
     bool receiveBroadcast = par("receiveBroadcast");
     if (receiveBroadcast)
         socket.setBroadcast(true);
@@ -91,6 +92,7 @@ void BasicFloodProt::setSocketOptions() {
 void BasicFloodProt::sendPacket() {
     printMe();
     std::cout << "BasicFloodProt::sendPacket()" << endl;
+
     Packet *packetToSend = queue.front();
     queue.pop();
 
@@ -130,6 +132,9 @@ void BasicFloodProt::processStart() {
 }
 
 void BasicFloodProt::processSend() {
+    printMe();
+    std::cout << "BasicFloodProt::processSend()" << endl;
+
     sendPacket();
     if(!queue.empty()) {
         simtime_t d = simTime() + par("sendInterval");
@@ -139,17 +144,22 @@ void BasicFloodProt::processSend() {
 }
 
 void BasicFloodProt::processStop() {
+    printMe();
+    std::cout << "BasicFloodProt::processStop()" << endl;
+
     socket.close();
 }
 
 void BasicFloodProt::handleMessageWhenUp(cMessage *msg) {
+    printMe();
+    std::cout << "BasicFloodProt::handleMessageWhenUp(...)" << endl;
+
     if (msg->isSelfMessage()) {
         ASSERT(msg == selfMsg);
         switch (selfMsg->getKind()) {
         case START:
             processStart();
             break;
-
         case SEND:
             processSend();
             break;
@@ -162,17 +172,26 @@ void BasicFloodProt::handleMessageWhenUp(cMessage *msg) {
 }
 
 void BasicFloodProt::socketDataArrived(UdpSocket *socket, Packet *packet) {
+    printMe();
+    std::cout << "BasicFloodProt::socketDataArrived()" << endl;
+
     // process incoming packet
     processPacket(packet);
 }
 
 void BasicFloodProt::socketErrorArrived(UdpSocket *socket,
         Indication *indication) {
+    printMe();
+    std::cout << "BasicFloodProt::socketErrorArrived()" << endl;
+
     EV_WARN << "Ignoring UDP error report " << indication->getName() << endl;
     delete indication;
 }
 
 void BasicFloodProt::socketClosed(UdpSocket *socket) {
+    printMe();
+    std::cout << "BasicFloodProt::socketClosed()" << endl;
+
     if (operationalState == State::STOPPING_OPERATION)
         startActiveOperationExtraTimeOrFinish(par("stopOperationExtraTime"));
 }
@@ -186,6 +205,9 @@ void BasicFloodProt::refreshDisplay() const {
 }
 
 void BasicFloodProt::processPacket(Packet *pk) {
+    printMe();
+    std::cout << "BasicFloodProt::processPacket()" << endl;
+
     emit(packetReceivedSignal, pk);
     EV_INFO << "Received packet: " << UdpSocket::getReceivedPacketInfo(pk)
     << endl;
@@ -196,6 +218,7 @@ void BasicFloodProt::processPacket(Packet *pk) {
     L3Address target = result->getTarget();
     Path currentPath = result->getPath();
     numReceived++;
+
     if (localAddress == target) {
         std::cout << "!!!!!!!!!!!!Destino alcançado" << endl;
         std::cout << "Caminho Percorrido: " << endl;
@@ -204,30 +227,78 @@ void BasicFloodProt::processPacket(Packet *pk) {
         });
         std::cout << localAddress << endl;
     } else {
-        if (activeFlows.find(flowId) == activeFlows.end()) {
-            activeFlows.insert(flowId);
 
-            Path newPath(currentPath);
-            newPath.push_back(localAddress);
 
-            std::ostringstream str;
-            str << packetName << "-" << numSent;
-            Packet *packet = new Packet(str.str().c_str());
-            const auto &payload = makeShared<PathPayload>();
+        //Lista
+        cRegistrationList *allNodesInfoList = nodeinfo_s.getInstance();
+        for (int i=0; i<allNodesInfoList->size(); i++)
+        {
+            cNodeInfoSigleton *node = static_cast<cNodeInfoSigleton *>(allNodesInfoList->get(i));
+            std::cout << "list: IP: " << node->getIp() << " Coord: " << node->getPosition() << endl;
+        }
 
-            payload->setTarget(target);
-            payload->setFlowId(flowId);
-            payload->setPath(newPath);
-            payload->setChunkLength(B(par("messageLength")));
-            payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
-            packet->insertAtBack(payload);
 
-            queue.push(packet); // insere na fila de envios
+        //Verfica se o node_atual(B) está no caminho entre o node_anterior(A) e destino(C)
+        if (currentPath.size()<=1) { // Se nao for origem
 
-            if(!selfMsg->isScheduled()) { //Se nÃ£o hÃ¡ nada previsto para envio, envia
-                selfMsg->setKind(SEND);
-                simtime_t d = simTime() + par("sendInterval");
-                scheduleAt(d, selfMsg);
+            //Imprimir lista
+
+            Coord ownCoord = getMyPosition(); //B
+            std::cout << "host B: " << ownCoord << endl;
+
+            L3Address lastNeighbourNode = currentPath.back();
+            Coord lastNeighbourNodeCoord, targetCoord;
+
+            cRegistrationList *allNodesInfoList = nodeinfo_s.getInstance();
+            for (int i=0; i<allNodesInfoList->size(); i++)
+            {
+                cNodeInfoSigleton *nodeInfo = static_cast<cNodeInfoSigleton *>(allNodesInfoList->get(i));
+                if (nodeInfo->getIp() == lastNeighbourNode) {
+                    lastNeighbourNodeCoord = nodeInfo->getPosition(); //A
+                    std::cout << "host A: " << lastNeighbourNodeCoord << endl;
+                }
+                if (nodeInfo->getIp() == target) {
+                    targetCoord = nodeInfo->getPosition(); //C
+                    std::cout << "host C: " << targetCoord << endl;
+                }
+
+            }
+            double dBC = ((ownCoord.x - targetCoord.x)*(ownCoord.x - targetCoord.x)) + ((ownCoord.y - targetCoord.y)*(ownCoord.y - targetCoord.y)) + ((ownCoord.z - targetCoord.z)*(ownCoord.z - targetCoord.z));
+
+            double dAC = ((lastNeighbourNodeCoord.x - targetCoord.x)*(lastNeighbourNodeCoord.x - targetCoord.x)) + ((lastNeighbourNodeCoord.y - targetCoord.y)*(lastNeighbourNodeCoord.y - targetCoord.y)) + ((lastNeighbourNodeCoord.z - targetCoord.z)*(lastNeighbourNodeCoord.z - targetCoord.z));
+            if (dBC > dAC) {
+                std::cout <<"O host: " << localAddress << " nao estah no caminho" << endl;
+                delete pk;
+                return;
+            }
+            else{
+                std::cout <<"O host: " << localAddress << " estah no caminho" << endl;
+                if (activeFlows.find(flowId) == activeFlows.end()) {
+                    activeFlows.insert(flowId);
+
+                    Path newPath(currentPath);
+                    newPath.push_back(localAddress);
+
+                    std::ostringstream str;
+                    str << packetName << "-" << numSent;
+                    Packet *packet = new Packet(str.str().c_str());
+                    const auto &payload = makeShared<PathPayload>();
+
+                    payload->setTarget(target);
+                    payload->setFlowId(flowId);
+                    payload->setPath(newPath);
+                    payload->setChunkLength(B(par("messageLength")));
+                    payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
+                    packet->insertAtBack(payload);
+
+                    queue.push(packet); // insere na fila de envios
+
+                    if(!selfMsg->isScheduled()) { //Se nao ha nada previsto para envio, envia
+                        selfMsg->setKind(SEND);
+                        simtime_t d = simTime() + par("sendInterval");
+                        scheduleAt(d, selfMsg);
+                    }
+                }
             }
         }
     }
@@ -237,28 +308,37 @@ void BasicFloodProt::processPacket(Packet *pk) {
 }
 
 void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
+    printMe();
+    std::cout << "BasicFloodProt::handleStartOperation()" << endl;
+
     for (int i = 0; i < interfaceTable->getNumInterfaces(); i++) {
         L3Address addr = interfaceTable->getInterface(i)->getIpv4Address();
         L3Address loopback = Ipv4Address::LOOPBACK_ADDRESS;
         if (addr != loopback) {
             localAddress = addr;
 
-            ownNodeInfo = new NodeInfo;
-            ownNodeInfo->ip = localAddress;
-            ownNodeInfo->position = getMyPosition();
+            //Armazena as informacoes do node em variavel
+            cNodeInfoSigleton *ownNodeInfo = new cNodeInfoSigleton();
+            ownNodeInfo->setIp(localAddress);
+            ownNodeInfo->setPosition(getMyPosition());
+            //Adiciona o node em uma lista
+            cRegistrationList *allNodesInfoList = nodeinfo_s.getInstance();
+            allNodesInfoList->add(ownNodeInfo);
 
-            allNodeInfoList.push_back(ownNodeInfo);
-
+            //Imprime a lista de nodes
+            /*for (int i=0; i<allNodeInfoList1->size(); i++)
+            {
+                cNodeInfoSigleton *node = static_cast<cNodeInfoSigleton *>(allNodeInfoList1->get(i));
+                std::cout << "list: IP: " << node->getIp() << " Coord: " << node->getPosition() << endl;
+            }*/
 
             if (par("enableSend")){
-                std::cout << "BasicFloodProt::handleStartOperation(...)" << endl;
                 std::cout << "Posicao: > "<< getMyPosition() << endl;
                 std::cout << "Origem: > " << localAddress << endl;
             }
         }
 
     }
-
 
     socket.setOutputGate(gate("socketOut"));
     const char *localAddress = par("localAddress");
@@ -305,6 +385,19 @@ Coord BasicFloodProt::getMyPosition() const {
     Coord positionNode = mobilityModule->getCurrentPosition();
     return positionNode;
 }
+
+void BasicFloodProt::getAllEstdBw() {
+    estdTwoPoints = new EstdBandwidth();
+
+    estdTwoPoints->ipA = Ipv4Address("10.0.0.1");
+    estdTwoPoints->ipB = Ipv4Address("10.0.0.2");
+    estdTwoPoints->bandwidth = 60.0;
+    //Criar a lista de hosts com a largura de banda entre eles.
+}
+
+
+
+
 
 } // namespace inet
 

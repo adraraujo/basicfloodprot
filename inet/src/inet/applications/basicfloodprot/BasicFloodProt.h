@@ -17,7 +17,8 @@
 //
 
 #ifndef __INET_BasicFloodProt_H
-#define __INET_BasicFloodProt_H
+#define __INET_BasicFloodProt_H \
+    EXECUTE_ON_STARTUP(nodesinfosingleton.getInstance()->add(new NodeInfo()))
 
 #include <vector>
 
@@ -29,12 +30,14 @@
 #include <set>
 #include <queue>
 #include <list>
+#include <cstdlib>
 
 #include "inet/common/geometry/common/Coord.h"
+#include "NodeInfoSigleton.h"
 
 namespace inet {
 
-class NodeInfo;
+class EstdBandwidth;
 
 /**
  * UDP application. See NED for more info.
@@ -55,7 +58,6 @@ protected:
     std::queue<Packet*> queue; //Fila de envio de pacotes
 
 
-
     // state
     UdpSocket socket;
     cMessage *selfMsg = nullptr;
@@ -66,14 +68,17 @@ protected:
     IInterfaceTable *interfaceTable = nullptr;
     L3Address localAddress;
 private:
-    NodeInfo *ownNodeInfo;
-    std::list<NodeInfo*> allNodeInfoList;
+
+
+    EstdBandwidth *estdTwoPoints;
+    std::list<EstdBandwidth*> allEstdInfoList;
+
 
 
 protected:
     virtual int numInitStages() const override { return NUM_INIT_STAGES; }
-    virtual void initialize(int stage) override;
-    virtual void handleMessageWhenUp(cMessage *msg) override; //2
+    virtual void initialize(int stage) override; //1
+    virtual void handleMessageWhenUp(cMessage *msg) override;
     virtual void finish() override;
     virtual void refreshDisplay() const override;
 
@@ -86,7 +91,7 @@ protected:
     virtual void processSend();
     virtual void processStop();
 
-    virtual void handleStartOperation(LifecycleOperation *operation) override; //1
+    virtual void handleStartOperation(LifecycleOperation *operation) override; //2
     virtual void handleStopOperation(LifecycleOperation *operation) override;
     virtual void handleCrashOperation(LifecycleOperation *operation) override;
 
@@ -96,6 +101,7 @@ protected:
     virtual L3Address getMyNetAddr() const;
     virtual void printMe() const;
     virtual Coord getMyPosition() const;
+    virtual void getAllEstdBw();
 
 public:
     BasicFloodProt() {}
