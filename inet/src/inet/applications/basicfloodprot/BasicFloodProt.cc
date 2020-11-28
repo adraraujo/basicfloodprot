@@ -35,7 +35,6 @@
 
 #include "EstdBandwidth.h"
 
-
 namespace inet {
 
 Define_Module(BasicFloodProt);
@@ -53,14 +52,10 @@ void BasicFloodProt::printMe() const {
 void BasicFloodProt::initialize(int stage) {
     ApplicationBase::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
-        printMe();
-        std::cout << "BasicFloodProt::initialize(...)" << endl;
-
         numSent = 0;
         numReceived = 0;
         WATCH(numSent);
         WATCH(numReceived);
-
         interfaceTable = getModuleFromPar<IInterfaceTable>(
                 par("interfaceTableModule"), this);
         localPort = par("localPort");
@@ -68,13 +63,20 @@ void BasicFloodProt::initialize(int stage) {
         startTime = par("startTime");
         packetName = par("packetName");
         selfMsg = new cMessage("sendTimer");
+
+        /*printMe();
+                getAllEstdBw();
+         */
+        //Imprime Lista
+        /*
+        for (auto const& it : allEstdInfoList) {
+            std::cout << "list: IPA: " << it->getIpAddrA() << " IPB: " << it->getIpAddrB() << " BW: " << it->getBw() << endl;
+        }*/
+
     }
 }
 
 void BasicFloodProt::finish() {
-    printMe();
-    std::cout << "BasicFloodProt::finish()" << endl;
-
     recordScalar("packets sent", numSent);
     recordScalar("packets received", numReceived);
     ApplicationBase::finish();
@@ -90,9 +92,6 @@ void BasicFloodProt::setSocketOptions() {
 }
 
 void BasicFloodProt::sendPacket() {
-    printMe();
-    std::cout << "BasicFloodProt::sendPacket()" << endl;
-
     Packet *packetToSend = queue.front();
     queue.pop();
 
@@ -105,9 +104,6 @@ void BasicFloodProt::sendPacket() {
 }
 
 void BasicFloodProt::processStart() {
-    printMe();
-    std::cout << "BasicFloodProt::processStart()" << endl;
-
     std::ostringstream str;
     str << packetName << "-" << numSent;
     Packet *packet = new Packet(str.str().c_str());
@@ -132,9 +128,6 @@ void BasicFloodProt::processStart() {
 }
 
 void BasicFloodProt::processSend() {
-    printMe();
-    std::cout << "BasicFloodProt::processSend()" << endl;
-
     sendPacket();
     if(!queue.empty()) {
         simtime_t d = simTime() + par("sendInterval");
@@ -146,14 +139,10 @@ void BasicFloodProt::processSend() {
 void BasicFloodProt::processStop() {
     printMe();
     std::cout << "BasicFloodProt::processStop()" << endl;
-
     socket.close();
 }
 
 void BasicFloodProt::handleMessageWhenUp(cMessage *msg) {
-    printMe();
-    std::cout << "BasicFloodProt::handleMessageWhenUp(...)" << endl;
-
     if (msg->isSelfMessage()) {
         ASSERT(msg == selfMsg);
         switch (selfMsg->getKind()) {
@@ -172,9 +161,6 @@ void BasicFloodProt::handleMessageWhenUp(cMessage *msg) {
 }
 
 void BasicFloodProt::socketDataArrived(UdpSocket *socket, Packet *packet) {
-    printMe();
-    std::cout << "BasicFloodProt::socketDataArrived()" << endl;
-
     // process incoming packet
     processPacket(packet);
 }
@@ -205,9 +191,6 @@ void BasicFloodProt::refreshDisplay() const {
 }
 
 void BasicFloodProt::processPacket(Packet *pk) {
-    printMe();
-    std::cout << "BasicFloodProt::processPacket()" << endl;
-
     emit(packetReceivedSignal, pk);
     EV_INFO << "Received packet: " << UdpSocket::getReceivedPacketInfo(pk)
     << endl;
@@ -226,22 +209,34 @@ void BasicFloodProt::processPacket(Packet *pk) {
             std::cout << addr << " -> ";
         });
         std::cout << localAddress << endl;
-    } else {
 
+        if (roundTrip=1) {
+            std::cout << "!!!!!!!!!!!!Preparando a volta" << endl;
+            // add destAddress de host[0] para host[1]
+            par("destAddress").setStringValue("host[1]");
+            // change *.host[0].app[*].enableSend = false para true
+            par("enableSend").setBoolValue(true);
 
-        //Lista
-        cRegistrationList *allNodesInfoList = nodeinfo_s.getInstance();
-        for (int i=0; i<allNodesInfoList->size(); i++)
-        {
-            cNodeInfoSigleton *node = static_cast<cNodeInfoSigleton *>(allNodesInfoList->get(i));
-            std::cout << "list: IP: " << node->getIp() << " Coord: " << node->getPosition() << endl;
+            L3Address result;
+            const char *dst = par("destAddress");
+            L3AddressResolver().tryResolve(dst, result);
+            if (result.isUnspecified())
+                EV_ERROR << "cannot resolve destination address: " << dst << endl;
+            destAddress = result;
+
+            std::cout << "Nova Origem > " << localAddress << endl;
+            std::cout << "Novo Destino > " << destAddress << endl;
+
+            /*cancelEvent(selfMsg);
+            simtime_t d = simTime() + par("sendInterval");
+            selfMsg->setKind(START);
+            scheduleAt(d, selfMsg);*/
+
         }
 
-
+    } else {
         //Verfica se o node_atual(B) está no caminho entre o node_anterior(A) e destino(C)
         if (currentPath.size()<=1) { // Se nao for origem
-
-            //Imprimir lista
 
             Coord ownCoord = getMyPosition(); //B
             std::cout << "host B: " << ownCoord << endl;
@@ -266,6 +261,8 @@ void BasicFloodProt::processPacket(Packet *pk) {
             double dBC = ((ownCoord.x - targetCoord.x)*(ownCoord.x - targetCoord.x)) + ((ownCoord.y - targetCoord.y)*(ownCoord.y - targetCoord.y)) + ((ownCoord.z - targetCoord.z)*(ownCoord.z - targetCoord.z));
 
             double dAC = ((lastNeighbourNodeCoord.x - targetCoord.x)*(lastNeighbourNodeCoord.x - targetCoord.x)) + ((lastNeighbourNodeCoord.y - targetCoord.y)*(lastNeighbourNodeCoord.y - targetCoord.y)) + ((lastNeighbourNodeCoord.z - targetCoord.z)*(lastNeighbourNodeCoord.z - targetCoord.z));
+            // Se dist de B a C maior que dist. de A a C. Significa que ponto B não está no caminho
+            // Ou se nao existe banda estimada disponível entre A e B.
             if (dBC > dAC) {
                 std::cout <<"O host: " << localAddress << " nao estah no caminho" << endl;
                 delete pk;
@@ -308,9 +305,6 @@ void BasicFloodProt::processPacket(Packet *pk) {
 }
 
 void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
-    printMe();
-    std::cout << "BasicFloodProt::handleStartOperation()" << endl;
-
     for (int i = 0; i < interfaceTable->getNumInterfaces(); i++) {
         L3Address addr = interfaceTable->getInterface(i)->getIpv4Address();
         L3Address loopback = Ipv4Address::LOOPBACK_ADDRESS;
@@ -321,19 +315,11 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
             cNodeInfoSigleton *ownNodeInfo = new cNodeInfoSigleton();
             ownNodeInfo->setIp(localAddress);
             ownNodeInfo->setPosition(getMyPosition());
-            //Adiciona o node em uma lista
+            //Adiciona o node em uma lista global
             cRegistrationList *allNodesInfoList = nodeinfo_s.getInstance();
             allNodesInfoList->add(ownNodeInfo);
 
-            //Imprime a lista de nodes
-            /*for (int i=0; i<allNodeInfoList1->size(); i++)
-            {
-                cNodeInfoSigleton *node = static_cast<cNodeInfoSigleton *>(allNodeInfoList1->get(i));
-                std::cout << "list: IP: " << node->getIp() << " Coord: " << node->getPosition() << endl;
-            }*/
-
             if (par("enableSend")){
-                std::cout << "Posicao: > "<< getMyPosition() << endl;
                 std::cout << "Origem: > " << localAddress << endl;
             }
         }
@@ -355,11 +341,20 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
         if (result.isUnspecified())
             EV_ERROR << "cannot resolve destination address: " << dst << endl;
         destAddress = result;
+
         std::cout << "Destino > " << destAddress << endl;
 
         simtime_t start = std::max(startTime, simTime());
         selfMsg->setKind(START);
         scheduleAt(start, selfMsg);
+
+        //host[1]
+        par("destAddress").setStringValue("");
+        par("enableSend").setBoolValue(false);
+
+        this->roundTrip++; // Incrementa ao roundTrip
+        printMe();
+        std::cout << "roundTrip=" << roundTrip << endl;
     }
 }
 
@@ -387,17 +382,36 @@ Coord BasicFloodProt::getMyPosition() const {
 }
 
 void BasicFloodProt::getAllEstdBw() {
-    estdTwoPoints = new EstdBandwidth();
-
-    estdTwoPoints->ipA = Ipv4Address("10.0.0.1");
-    estdTwoPoints->ipB = Ipv4Address("10.0.0.2");
-    estdTwoPoints->bandwidth = 60.0;
-    //Criar a lista de hosts com a largura de banda entre eles.
+    //Cria a lista de hosts com a largura de banda entre eles.
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.4"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.5"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.6"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.7"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.8"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.9"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.10"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.1"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.1"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.6"),Ipv4Address("10.0.0.1"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.7"),Ipv4Address("10.0.0.1"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.8"),Ipv4Address("10.0.0.1"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.9"),Ipv4Address("10.0.0.1"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
+    estdTwoPoints = new EstdBandwidth(Ipv4Address("10.0.0.10"),Ipv4Address("10.0.0.1"),0.0);
+    allEstdInfoList.push_back(estdTwoPoints);
 }
-
-
-
-
 
 } // namespace inet
 

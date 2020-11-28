@@ -13,10 +13,22 @@
 namespace inet {
 
 class EstdBandwidth {
-public:
-    L3Address ipA;
-    L3Address ipB;
+    L3Address ipAddrA;
+    L3Address ipAddrB;
     double bandwidth;
+
+
+public:
+    EstdBandwidth(L3Address ipA,L3Address ipB,double bw) {
+        this->ipAddrA = ipA;
+        this->ipAddrB = ipB;
+        this->bandwidth = bw;
+    }
+    virtual ~EstdBandwidth() {}
+
+    L3Address getIpAddrA() {return this->ipAddrA;}
+    L3Address getIpAddrB() {return this->ipAddrB;}
+    double getBw(){return this->bandwidth;}
 
 };
 

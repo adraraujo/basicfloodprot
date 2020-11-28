@@ -17,7 +17,7 @@
 //
 
 #ifndef __INET_BasicFloodProt_H
-#define __INET_BasicFloodProt_H \
+#define __INET_BasicFloodProt_H //\
     EXECUTE_ON_STARTUP(nodesinfosingleton.getInstance()->add(new NodeInfo()))
 
 #include <vector>
@@ -67,14 +67,12 @@ protected:
     int numReceived = 0;
     IInterfaceTable *interfaceTable = nullptr;
     L3Address localAddress;
+
+    //
+    int roundTrip = 1;
 private:
-
-
     EstdBandwidth *estdTwoPoints;
     std::list<EstdBandwidth*> allEstdInfoList;
-
-
-
 protected:
     virtual int numInitStages() const override { return NUM_INIT_STAGES; }
     virtual void initialize(int stage) override; //1
