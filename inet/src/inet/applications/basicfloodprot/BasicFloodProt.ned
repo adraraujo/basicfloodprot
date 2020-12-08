@@ -42,6 +42,7 @@ simple BasicFloodProt like IApp
         string interfaceTableModule = default("^.interfaceTable");
         int localPort = default(5000);  // local port (-1: use ephemeral port)
         string destAddress = default(""); // list of IP addresses, separated by spaces ("": don't send)
+        string sourceAddress = default(""); // list of IP addresses, separated by spaces ("": don't send)
         bool enableSend = default(false);
         string localAddress = default("");
         string packetName = default("UdpBasicAppData");
@@ -50,6 +51,8 @@ simple BasicFloodProt like IApp
         double startTime @unit(s) = default(1s); // application start time (start of the first packet)
         volatile double sendInterval @unit(s) = uniform(0.1s, 0.5s); // should usually be a random value, e.g. exponential(1)
         int flowId = default(-1);
+        double reqAppOut  @unit(Mbps) = default(-1.0Mbps);
+        double reqAppIn @unit(Mbps) = default(-1.0Mbps);
         bool receiveBroadcast = default(true); // if true, makes the socket receive broadcast packets
         @display("i=block/app");
         @lifecycleSupport;

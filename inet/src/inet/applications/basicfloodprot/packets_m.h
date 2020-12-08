@@ -39,10 +39,12 @@ class PathPayload;
 #include "inet/networklayer/common/L3Address.h"
 using namespace inet;
 typedef std::vector<inet::L3Address> Path;
+#include "BandwidthTwoPoints.h"
+typedef std::list<BandwidthTwoPoints> ListBandwidth;
 // }}
 
 /**
- * Class generated from <tt>inet/applications/basicfloodprot/packets.msg:38</tt> by nedtool.
+ * Class generated from <tt>inet/applications/basicfloodprot/packets.msg:45</tt> by nedtool.
  * <pre>
  * //
  * // TODO generated message class
@@ -52,6 +54,10 @@ typedef std::vector<inet::L3Address> Path;
  *     Path path;
  *     L3Address target;
  *     int flowId;
+ *     ListBandwidth listbandwith;
+ *     double reqAppOut;
+ *     double reqAppIn;
+ *     int phase; // Request=1, Reply=2, Reserve=3
  * }
  * </pre>
  */
@@ -61,6 +67,10 @@ class INET_API PathPayload : public ::inet::FieldsChunk
     Path path;
     L3Address target;
     int flowId = 0;
+    ListBandwidth listbandwith;
+    double reqAppOut = 0;
+    double reqAppIn = 0;
+    int phase = 0;
 
   private:
     void copy(const PathPayload& other);
@@ -87,6 +97,15 @@ class INET_API PathPayload : public ::inet::FieldsChunk
     virtual void setTarget(const L3Address& target);
     virtual int getFlowId() const;
     virtual void setFlowId(int flowId);
+    virtual const ListBandwidth& getListbandwith() const;
+    virtual ListBandwidth& getListbandwithForUpdate() { handleChange();return const_cast<ListBandwidth&>(const_cast<PathPayload*>(this)->getListbandwith());}
+    virtual void setListbandwith(const ListBandwidth& listbandwith);
+    virtual double getReqAppOut() const;
+    virtual void setReqAppOut(double reqAppOut);
+    virtual double getReqAppIn() const;
+    virtual void setReqAppIn(double reqAppIn);
+    virtual int getPhase() const;
+    virtual void setPhase(int phase);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const PathPayload& obj) {obj.parsimPack(b);}

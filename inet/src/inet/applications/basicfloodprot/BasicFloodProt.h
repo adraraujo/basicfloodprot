@@ -31,13 +31,13 @@
 #include <queue>
 #include <list>
 #include <cstdlib>
-
+#include <map>
 #include "inet/common/geometry/common/Coord.h"
-#include "NodeInfoSigleton.h"
+#include <utility>
 
 namespace inet {
 
-class EstdBandwidth;
+class BandwidthTwoPoints;
 
 /**
  * UDP application. See NED for more info.
@@ -69,10 +69,15 @@ protected:
     L3Address localAddress;
 
     //
-    int roundTrip = 1;
 private:
-    EstdBandwidth *estdTwoPoints;
-    std::list<EstdBandwidth*> allEstdInfoList;
+    BandwidthTwoPoints *estdTwoPoints;
+    std::list<BandwidthTwoPoints*> allEstdInfoList;
+    std::list<std::pair<L3Address,double>> listIpBW;
+    std::map<int,double> mapSumBW; // map (flowid, bw)
+    std::pair<int,int> pairFlowIdPhase; // map (flowid, phase)
+    std::list<std::pair<L3Address,double>>>
+    simtime_t timer, timer1, time2;
+    //std::map<int,std::list<std::pair<L3Address,double>>> mapSumBW;
 protected:
     virtual int numInitStages() const override { return NUM_INIT_STAGES; }
     virtual void initialize(int stage) override; //1
@@ -100,6 +105,16 @@ protected:
     virtual void printMe() const;
     virtual Coord getMyPosition() const;
     virtual void getAllEstdBw();
+
+    virtual void processPacketRequest(Packet *msg);
+    virtual void processPacketReply(Packet *msg);
+    virtual void processPacketReserve(Packet *msg);
+
+    bool BasicFloodProt::isNodeForwader(Coord *A,Coord *B,Coord *C);
+    void BasicFloodProt::processForwardNode(Packet *msg);
+    void BasicFloodProt::processTargetNode(Packet *msg);
+
+
 
 public:
     BasicFloodProt() {}

@@ -22,13 +22,20 @@ cplusplus {{
 #include "inet/networklayer/common/L3Address.h"
 using namespace inet;
 typedef std::vector<inet::L3Address> Path;
+#include "BandwidthTwoPoints.h"
+typedef std::list<BandwidthTwoPoints> ListBandwidth;
 }}
 
 class Path {
     @existingClass;
 }
-
 class L3Address {
+    @existingClass;
+}
+class BandwidthTwoPoints {
+    @existingClass;
+}
+class ListBandwidth {
     @existingClass;
 }
 //
@@ -39,4 +46,8 @@ class PathPayload extends inet::FieldsChunk
     Path path;
     L3Address target;    
     int flowId;
+    ListBandwidth listbandwith;
+    double reqAppOut;
+    double reqAppIn;
+    int phase; // Request=1, Reply=2, Reserve=3
 }

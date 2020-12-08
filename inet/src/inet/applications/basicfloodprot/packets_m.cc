@@ -640,6 +640,440 @@ void *L3AddressDescriptor::getFieldStructValuePointer(void *object, int field, i
     }
 }
 
+class BandwidthTwoPointsDescriptor : public omnetpp::cClassDescriptor
+{
+  private:
+    mutable const char **propertynames;
+    enum FieldConstants {
+    };
+  public:
+    BandwidthTwoPointsDescriptor();
+    virtual ~BandwidthTwoPointsDescriptor();
+
+    virtual bool doesSupport(omnetpp::cObject *obj) const override;
+    virtual const char **getPropertyNames() const override;
+    virtual const char *getProperty(const char *propertyname) const override;
+    virtual int getFieldCount() const override;
+    virtual const char *getFieldName(int field) const override;
+    virtual int findField(const char *fieldName) const override;
+    virtual unsigned int getFieldTypeFlags(int field) const override;
+    virtual const char *getFieldTypeString(int field) const override;
+    virtual const char **getFieldPropertyNames(int field) const override;
+    virtual const char *getFieldProperty(int field, const char *propertyname) const override;
+    virtual int getFieldArraySize(void *object, int field) const override;
+
+    virtual const char *getFieldDynamicTypeString(void *object, int field, int i) const override;
+    virtual std::string getFieldValueAsString(void *object, int field, int i) const override;
+    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const override;
+
+    virtual const char *getFieldStructName(int field) const override;
+    virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;
+};
+
+Register_ClassDescriptor(BandwidthTwoPointsDescriptor)
+
+BandwidthTwoPointsDescriptor::BandwidthTwoPointsDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(BandwidthTwoPoints)), "")
+{
+    propertynames = nullptr;
+}
+
+BandwidthTwoPointsDescriptor::~BandwidthTwoPointsDescriptor()
+{
+    delete[] propertynames;
+}
+
+bool BandwidthTwoPointsDescriptor::doesSupport(omnetpp::cObject *obj) const
+{
+    return dynamic_cast<BandwidthTwoPoints *>(obj)!=nullptr;
+}
+
+const char **BandwidthTwoPointsDescriptor::getPropertyNames() const
+{
+    if (!propertynames) {
+        static const char *names[] = { "existingClass",  nullptr };
+        omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+        const char **basenames = basedesc ? basedesc->getPropertyNames() : nullptr;
+        propertynames = mergeLists(basenames, names);
+    }
+    return propertynames;
+}
+
+const char *BandwidthTwoPointsDescriptor::getProperty(const char *propertyname) const
+{
+    if (!strcmp(propertyname, "existingClass")) return "";
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->getProperty(propertyname) : nullptr;
+}
+
+int BandwidthTwoPointsDescriptor::getFieldCount() const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? 0+basedesc->getFieldCount() : 0;
+}
+
+unsigned int BandwidthTwoPointsDescriptor::getFieldTypeFlags(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldTypeFlags(field);
+        field -= basedesc->getFieldCount();
+    }
+    return 0;
+}
+
+const char *BandwidthTwoPointsDescriptor::getFieldName(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldName(field);
+        field -= basedesc->getFieldCount();
+    }
+    return nullptr;
+}
+
+int BandwidthTwoPointsDescriptor::findField(const char *fieldName) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->findField(fieldName) : -1;
+}
+
+const char *BandwidthTwoPointsDescriptor::getFieldTypeString(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldTypeString(field);
+        field -= basedesc->getFieldCount();
+    }
+    return nullptr;
+}
+
+const char **BandwidthTwoPointsDescriptor::getFieldPropertyNames(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldPropertyNames(field);
+        field -= basedesc->getFieldCount();
+    }
+    switch (field) {
+        default: return nullptr;
+    }
+}
+
+const char *BandwidthTwoPointsDescriptor::getFieldProperty(int field, const char *propertyname) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldProperty(field, propertyname);
+        field -= basedesc->getFieldCount();
+    }
+    switch (field) {
+        default: return nullptr;
+    }
+}
+
+int BandwidthTwoPointsDescriptor::getFieldArraySize(void *object, int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldArraySize(object, field);
+        field -= basedesc->getFieldCount();
+    }
+    BandwidthTwoPoints *pp = (BandwidthTwoPoints *)object; (void)pp;
+    switch (field) {
+        default: return 0;
+    }
+}
+
+const char *BandwidthTwoPointsDescriptor::getFieldDynamicTypeString(void *object, int field, int i) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldDynamicTypeString(object,field,i);
+        field -= basedesc->getFieldCount();
+    }
+    BandwidthTwoPoints *pp = (BandwidthTwoPoints *)object; (void)pp;
+    switch (field) {
+        default: return nullptr;
+    }
+}
+
+std::string BandwidthTwoPointsDescriptor::getFieldValueAsString(void *object, int field, int i) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldValueAsString(object,field,i);
+        field -= basedesc->getFieldCount();
+    }
+    BandwidthTwoPoints *pp = (BandwidthTwoPoints *)object; (void)pp;
+    switch (field) {
+        default: return "";
+    }
+}
+
+bool BandwidthTwoPointsDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->setFieldValueAsString(object,field,i,value);
+        field -= basedesc->getFieldCount();
+    }
+    BandwidthTwoPoints *pp = (BandwidthTwoPoints *)object; (void)pp;
+    switch (field) {
+        default: return false;
+    }
+}
+
+const char *BandwidthTwoPointsDescriptor::getFieldStructName(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldStructName(field);
+        field -= basedesc->getFieldCount();
+    }
+    return nullptr;
+}
+
+void *BandwidthTwoPointsDescriptor::getFieldStructValuePointer(void *object, int field, int i) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldStructValuePointer(object, field, i);
+        field -= basedesc->getFieldCount();
+    }
+    BandwidthTwoPoints *pp = (BandwidthTwoPoints *)object; (void)pp;
+    switch (field) {
+        default: return nullptr;
+    }
+}
+
+class ListBandwidthDescriptor : public omnetpp::cClassDescriptor
+{
+  private:
+    mutable const char **propertynames;
+    enum FieldConstants {
+    };
+  public:
+    ListBandwidthDescriptor();
+    virtual ~ListBandwidthDescriptor();
+
+    virtual bool doesSupport(omnetpp::cObject *obj) const override;
+    virtual const char **getPropertyNames() const override;
+    virtual const char *getProperty(const char *propertyname) const override;
+    virtual int getFieldCount() const override;
+    virtual const char *getFieldName(int field) const override;
+    virtual int findField(const char *fieldName) const override;
+    virtual unsigned int getFieldTypeFlags(int field) const override;
+    virtual const char *getFieldTypeString(int field) const override;
+    virtual const char **getFieldPropertyNames(int field) const override;
+    virtual const char *getFieldProperty(int field, const char *propertyname) const override;
+    virtual int getFieldArraySize(void *object, int field) const override;
+
+    virtual const char *getFieldDynamicTypeString(void *object, int field, int i) const override;
+    virtual std::string getFieldValueAsString(void *object, int field, int i) const override;
+    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const override;
+
+    virtual const char *getFieldStructName(int field) const override;
+    virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;
+};
+
+Register_ClassDescriptor(ListBandwidthDescriptor)
+
+ListBandwidthDescriptor::ListBandwidthDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(ListBandwidth)), "")
+{
+    propertynames = nullptr;
+}
+
+ListBandwidthDescriptor::~ListBandwidthDescriptor()
+{
+    delete[] propertynames;
+}
+
+bool ListBandwidthDescriptor::doesSupport(omnetpp::cObject *obj) const
+{
+    return dynamic_cast<ListBandwidth *>(obj)!=nullptr;
+}
+
+const char **ListBandwidthDescriptor::getPropertyNames() const
+{
+    if (!propertynames) {
+        static const char *names[] = { "existingClass",  nullptr };
+        omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+        const char **basenames = basedesc ? basedesc->getPropertyNames() : nullptr;
+        propertynames = mergeLists(basenames, names);
+    }
+    return propertynames;
+}
+
+const char *ListBandwidthDescriptor::getProperty(const char *propertyname) const
+{
+    if (!strcmp(propertyname, "existingClass")) return "";
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->getProperty(propertyname) : nullptr;
+}
+
+int ListBandwidthDescriptor::getFieldCount() const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? 0+basedesc->getFieldCount() : 0;
+}
+
+unsigned int ListBandwidthDescriptor::getFieldTypeFlags(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldTypeFlags(field);
+        field -= basedesc->getFieldCount();
+    }
+    return 0;
+}
+
+const char *ListBandwidthDescriptor::getFieldName(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldName(field);
+        field -= basedesc->getFieldCount();
+    }
+    return nullptr;
+}
+
+int ListBandwidthDescriptor::findField(const char *fieldName) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->findField(fieldName) : -1;
+}
+
+const char *ListBandwidthDescriptor::getFieldTypeString(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldTypeString(field);
+        field -= basedesc->getFieldCount();
+    }
+    return nullptr;
+}
+
+const char **ListBandwidthDescriptor::getFieldPropertyNames(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldPropertyNames(field);
+        field -= basedesc->getFieldCount();
+    }
+    switch (field) {
+        default: return nullptr;
+    }
+}
+
+const char *ListBandwidthDescriptor::getFieldProperty(int field, const char *propertyname) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldProperty(field, propertyname);
+        field -= basedesc->getFieldCount();
+    }
+    switch (field) {
+        default: return nullptr;
+    }
+}
+
+int ListBandwidthDescriptor::getFieldArraySize(void *object, int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldArraySize(object, field);
+        field -= basedesc->getFieldCount();
+    }
+    ListBandwidth *pp = (ListBandwidth *)object; (void)pp;
+    switch (field) {
+        default: return 0;
+    }
+}
+
+const char *ListBandwidthDescriptor::getFieldDynamicTypeString(void *object, int field, int i) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldDynamicTypeString(object,field,i);
+        field -= basedesc->getFieldCount();
+    }
+    ListBandwidth *pp = (ListBandwidth *)object; (void)pp;
+    switch (field) {
+        default: return nullptr;
+    }
+}
+
+std::string ListBandwidthDescriptor::getFieldValueAsString(void *object, int field, int i) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldValueAsString(object,field,i);
+        field -= basedesc->getFieldCount();
+    }
+    ListBandwidth *pp = (ListBandwidth *)object; (void)pp;
+    switch (field) {
+        default: return "";
+    }
+}
+
+bool ListBandwidthDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->setFieldValueAsString(object,field,i,value);
+        field -= basedesc->getFieldCount();
+    }
+    ListBandwidth *pp = (ListBandwidth *)object; (void)pp;
+    switch (field) {
+        default: return false;
+    }
+}
+
+const char *ListBandwidthDescriptor::getFieldStructName(int field) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldStructName(field);
+        field -= basedesc->getFieldCount();
+    }
+    return nullptr;
+}
+
+void *ListBandwidthDescriptor::getFieldStructValuePointer(void *object, int field, int i) const
+{
+    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount())
+            return basedesc->getFieldStructValuePointer(object, field, i);
+        field -= basedesc->getFieldCount();
+    }
+    ListBandwidth *pp = (ListBandwidth *)object; (void)pp;
+    switch (field) {
+        default: return nullptr;
+    }
+}
+
 Register_Class(PathPayload)
 
 PathPayload::PathPayload() : ::inet::FieldsChunk()
@@ -668,6 +1102,10 @@ void PathPayload::copy(const PathPayload& other)
     this->path = other.path;
     this->target = other.target;
     this->flowId = other.flowId;
+    this->listbandwith = other.listbandwith;
+    this->reqAppOut = other.reqAppOut;
+    this->reqAppIn = other.reqAppIn;
+    this->phase = other.phase;
 }
 
 void PathPayload::parsimPack(omnetpp::cCommBuffer *b) const
@@ -676,6 +1114,10 @@ void PathPayload::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->path);
     doParsimPacking(b,this->target);
     doParsimPacking(b,this->flowId);
+    doParsimPacking(b,this->listbandwith);
+    doParsimPacking(b,this->reqAppOut);
+    doParsimPacking(b,this->reqAppIn);
+    doParsimPacking(b,this->phase);
 }
 
 void PathPayload::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -684,6 +1126,10 @@ void PathPayload::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->path);
     doParsimUnpacking(b,this->target);
     doParsimUnpacking(b,this->flowId);
+    doParsimUnpacking(b,this->listbandwith);
+    doParsimUnpacking(b,this->reqAppOut);
+    doParsimUnpacking(b,this->reqAppIn);
+    doParsimUnpacking(b,this->phase);
 }
 
 const Path& PathPayload::getPath() const
@@ -719,6 +1165,50 @@ void PathPayload::setFlowId(int flowId)
     this->flowId = flowId;
 }
 
+const ListBandwidth& PathPayload::getListbandwith() const
+{
+    return this->listbandwith;
+}
+
+void PathPayload::setListbandwith(const ListBandwidth& listbandwith)
+{
+    handleChange();
+    this->listbandwith = listbandwith;
+}
+
+double PathPayload::getReqAppOut() const
+{
+    return this->reqAppOut;
+}
+
+void PathPayload::setReqAppOut(double reqAppOut)
+{
+    handleChange();
+    this->reqAppOut = reqAppOut;
+}
+
+double PathPayload::getReqAppIn() const
+{
+    return this->reqAppIn;
+}
+
+void PathPayload::setReqAppIn(double reqAppIn)
+{
+    handleChange();
+    this->reqAppIn = reqAppIn;
+}
+
+int PathPayload::getPhase() const
+{
+    return this->phase;
+}
+
+void PathPayload::setPhase(int phase)
+{
+    handleChange();
+    this->phase = phase;
+}
+
 class PathPayloadDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -727,6 +1217,10 @@ class PathPayloadDescriptor : public omnetpp::cClassDescriptor
         FIELD_path,
         FIELD_target,
         FIELD_flowId,
+        FIELD_listbandwith,
+        FIELD_reqAppOut,
+        FIELD_reqAppIn,
+        FIELD_phase,
     };
   public:
     PathPayloadDescriptor();
@@ -789,7 +1283,7 @@ const char *PathPayloadDescriptor::getProperty(const char *propertyname) const
 int PathPayloadDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 3+basedesc->getFieldCount() : 3;
+    return basedesc ? 7+basedesc->getFieldCount() : 7;
 }
 
 unsigned int PathPayloadDescriptor::getFieldTypeFlags(int field) const
@@ -804,8 +1298,12 @@ unsigned int PathPayloadDescriptor::getFieldTypeFlags(int field) const
         FD_ISCOMPOUND,    // FIELD_path
         FD_ISCOMPOUND,    // FIELD_target
         FD_ISEDITABLE,    // FIELD_flowId
+        FD_ISCOMPOUND,    // FIELD_listbandwith
+        FD_ISEDITABLE,    // FIELD_reqAppOut
+        FD_ISEDITABLE,    // FIELD_reqAppIn
+        FD_ISEDITABLE,    // FIELD_phase
     };
-    return (field >= 0 && field < 3) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 7) ? fieldTypeFlags[field] : 0;
 }
 
 const char *PathPayloadDescriptor::getFieldName(int field) const
@@ -820,8 +1318,12 @@ const char *PathPayloadDescriptor::getFieldName(int field) const
         "path",
         "target",
         "flowId",
+        "listbandwith",
+        "reqAppOut",
+        "reqAppIn",
+        "phase",
     };
-    return (field >= 0 && field < 3) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldNames[field] : nullptr;
 }
 
 int PathPayloadDescriptor::findField(const char *fieldName) const
@@ -831,6 +1333,10 @@ int PathPayloadDescriptor::findField(const char *fieldName) const
     if (fieldName[0] == 'p' && strcmp(fieldName, "path") == 0) return base+0;
     if (fieldName[0] == 't' && strcmp(fieldName, "target") == 0) return base+1;
     if (fieldName[0] == 'f' && strcmp(fieldName, "flowId") == 0) return base+2;
+    if (fieldName[0] == 'l' && strcmp(fieldName, "listbandwith") == 0) return base+3;
+    if (fieldName[0] == 'r' && strcmp(fieldName, "reqAppOut") == 0) return base+4;
+    if (fieldName[0] == 'r' && strcmp(fieldName, "reqAppIn") == 0) return base+5;
+    if (fieldName[0] == 'p' && strcmp(fieldName, "phase") == 0) return base+6;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -846,8 +1352,12 @@ const char *PathPayloadDescriptor::getFieldTypeString(int field) const
         "Path",    // FIELD_path
         "L3Address",    // FIELD_target
         "int",    // FIELD_flowId
+        "ListBandwidth",    // FIELD_listbandwith
+        "double",    // FIELD_reqAppOut
+        "double",    // FIELD_reqAppIn
+        "int",    // FIELD_phase
     };
-    return (field >= 0 && field < 3) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **PathPayloadDescriptor::getFieldPropertyNames(int field) const
@@ -917,6 +1427,10 @@ std::string PathPayloadDescriptor::getFieldValueAsString(void *object, int field
         case FIELD_path: {std::stringstream out; out << pp->getPath(); return out.str();}
         case FIELD_target: {std::stringstream out; out << pp->getTarget(); return out.str();}
         case FIELD_flowId: return long2string(pp->getFlowId());
+        case FIELD_listbandwith: {std::stringstream out; out << pp->getListbandwith(); return out.str();}
+        case FIELD_reqAppOut: return double2string(pp->getReqAppOut());
+        case FIELD_reqAppIn: return double2string(pp->getReqAppIn());
+        case FIELD_phase: return long2string(pp->getPhase());
         default: return "";
     }
 }
@@ -932,6 +1446,9 @@ bool PathPayloadDescriptor::setFieldValueAsString(void *object, int field, int i
     PathPayload *pp = (PathPayload *)object; (void)pp;
     switch (field) {
         case FIELD_flowId: pp->setFlowId(string2long(value)); return true;
+        case FIELD_reqAppOut: pp->setReqAppOut(string2double(value)); return true;
+        case FIELD_reqAppIn: pp->setReqAppIn(string2double(value)); return true;
+        case FIELD_phase: pp->setPhase(string2long(value)); return true;
         default: return false;
     }
 }
@@ -947,6 +1464,7 @@ const char *PathPayloadDescriptor::getFieldStructName(int field) const
     switch (field) {
         case FIELD_path: return omnetpp::opp_typename(typeid(Path));
         case FIELD_target: return omnetpp::opp_typename(typeid(L3Address));
+        case FIELD_listbandwith: return omnetpp::opp_typename(typeid(ListBandwidth));
         default: return nullptr;
     };
 }
@@ -963,6 +1481,7 @@ void *PathPayloadDescriptor::getFieldStructValuePointer(void *object, int field,
     switch (field) {
         case FIELD_path: return toVoidPtr(&pp->getPath()); break;
         case FIELD_target: return toVoidPtr(&pp->getTarget()); break;
+        case FIELD_listbandwith: return toVoidPtr(&pp->getListbandwith()); break;
         default: return nullptr;
     }
 }
