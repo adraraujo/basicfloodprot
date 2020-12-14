@@ -112,6 +112,7 @@ void BasicFloodProt::processStart() {
 
     packet->insertAtBack(payload);
     activeFlows.insert(par("flowId"));
+    
     queue.push(packet); // insere na fila de envios
     selfMsg->setKind(SEND);
     simtime_t d = simTime() + par("sendInterval");

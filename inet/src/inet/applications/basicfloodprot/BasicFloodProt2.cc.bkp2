@@ -96,33 +96,25 @@ void BasicFloodProt::processStart() {
     str << packetName << "-" << numSent;
     Packet *packet = new Packet(str.str().c_str());
     const auto &payload = makeShared<PathPayload>();
-    int phase = 1;
-    std::pair<int,int> flowIdPhase(par("flowId"),phase);
-
-    activeFlows.insert(flowIdPhase);
-
+    activeFlows.insert(par("flowId"));
+    payload->setTarget(destAddress);
+    payload->setFlowId(par("flowId"));
+    payload->setChunkLength(B(par("messageLength")));
+    payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
     Path newPath;
     newPath.push_back(localAddress);
     payload->setPath(newPath);
-
-    payload->setTarget(destAddress);
-    payload->setFlowId(par("flowId"));
-
-    payload->setChunkLength(B(par("messageLength")));
-    payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
-
     ListBandwidth *newListBw = new ListBandwidth();
     payload->setListbandwith(*newListBw);
     payload->setReqAppOut(par("reqAppOut"));
     payload->setReqAppIn(par("reqAppIn"));
-    payload->setPhase(phase); //PhaseInitial=1
+    payload->setPhase(1); //PhaseInitial=1
 
     std::pair<int,int> pairFlowIdPhase(par("flowId"),1);
     listFLowIdPhase.push_back(pairFlowIdPhase);
 
     packet->insertAtBack(payload);
-
-    activeFlows.insert(flowIdPhase);
+    activeFlows.insert(par("flowId"));
     queue.push(packet); // insere na fila de envios
     selfMsg->setKind(SEND);
     simtime_t d = simTime() + par("sendInterval");
@@ -185,8 +177,7 @@ void BasicFloodProt::refreshDisplay() const {
 bool BasicFloodProt::isNodeForwarder(Coord A,Coord B,Coord C) {
     double dBC = ((B.x - C.x)*(B.x - C.x)) + ((B.y - C.y)*(B.y - C.y)) + ((B.z - C.z)*(B.z - C.z));
     double dAC = ((A.x - C.x)*(A.x - C.x)) + ((A.y - C.y)*(A.y - C.y)) + ((A.z - C.z)*(A.z - C.z));
-    double dAB = ((A.x - B.x)*(A.x - B.x)) + ((A.y - B.y)*(A.y - B.y)) + ((A.z - B.z)*(A.z - B.z));
-    if (dBC < dAC && dAB < dAC)
+    if (dBC < dAC)
         return true;
     else
         return false;
@@ -194,195 +185,281 @@ bool BasicFloodProt::isNodeForwarder(Coord A,Coord B,Coord C) {
 }
 
 void BasicFloodProt::processTargetNode(Packet *pk){
+    std::cout << "*****processTargetNode*****" << endl;
+    const auto &payload2 = pk->removeAtBack();
+    pk->insertAtBack(payload2);
+    const Ptr<PathPayload> &result = dynamicPtrCast<PathPayload>(payload2);
+    int flowId = result->getFlowId();
+    L3Address target = result->getTarget();
+    Path currentPath = result->getPath();
+    L3Address lastNeighbourNode = currentPath.back();
+    double reqAppOut = result->getReqAppOut();
+    double reqAppIn = result->getReqAppIn();
+    int phase = result->getPhase();
+
+    double reqApp;
+    if (phase == 1) {
+        double reqApp = result->getReqAppOut();
+    }
+    else if (phase == 2)
+        double reqApp = result->getReqAppIn();
+
+    std::map<int,double> mapSumBW; // map (flowid, bw)
+    ListBandwidth lstBW;
+    if (mapSumBW.find(flowId) == mapSumBW.end()) { //verificar se flowId nao está no mapa
+        lstBW = result->getListbandwith(); //pega lista do ultimo pacote
+    }
+    else {
+        for (auto const& it : allEstdInfoList) {
+            if (it->getLastHost() == lastNeighbourNode && it->getCurrentHost() == localAddress) {
+                lstBW.push_back(*it); //senao add a lista a banda entre os dois pontos
+            }
+        }
+
+    }
+
+    double currentBw;
+    for (auto const& it : allEstdInfoList) { // recupera a banda atual
+        if (it->getLastHost() == lastNeighbourNode && it->getCurrentHost() == localAddress) {
+            currentBw = it->getBw();
+        }
+    }
+
+    if (mapSumBW.find(flowId) !=mapSumBW.end()) { //#inicio (Map existe) ?
+        if (simTime() > timer || timer == 0) { // # inicio(Tempo_de_simulacao > Timer | Timer = 0) ?
+            delete pk;
+            std::cout << "Timer: " << timer << ". Pacote deletado!" << endl;
+            return;
+        }
+        else { //add currentBw ao Map
+            mapSumBW[flowId]+= currentBw;
+            std::cout << "Adicionou ao map" << endl;
+        }// #fim (Tempo_de_simulacao > Timer | Timer = 0) ?
+    }
+    else { //Cria Map e inicia timer
+        mapSumBW[flowId] = currentBw;  //cria Map
+        timer = simTime() + 1; //inicia timer de 1 segundo
+        std::cout <<"Tempo atual: " << simTime() << " Timer: " << timer << endl;
+    } //#fim (Map existe) ?
+
+    if (currentBw >= reqApp) { //(currentBw >= reqAppOut) ?
+        std::pair<int,int> pairFlowIdPhase(flowId,phase);
+        listFLowIdPhase.push_back(pairFlowIdPhase);
+
+        std::string s = par("sourceAddress");
+        par("destAddress").setStringValue(s); // alterando o destino para a origem
+        par("enableSend").setBoolValue(true); // permitindo o envio de pacote
+        L3Address result;
+        const char *dst = par("destAddress");
+        L3AddressResolver().tryResolve(dst, result);
+        if (result.isUnspecified())
+            EV_ERROR << "cannot resolve destination address: " << dst << endl;
+        destAddress = result;
+        if (localAddress != destAddress) {
+            std::cout << "Caminho Percorrido: " << endl; // #inicio Imprime caminho percorrido
+            std::for_each(currentPath.begin(), currentPath.end(), [](L3Address &addr) {
+                std::cout << addr << " -> ";
+            });
+            std::cout << localAddress << endl;
+            std::cout << "***!Destino alcançado***" << endl;// #fim Imprime caminho percorrido
+            std::cout << "**Banda de ida: " << currentBw << " **" << endl;
+            std::cout << "*****Preparando a volta*****" << endl;
+            std::cout << "Nova Origem > " << localAddress << endl;
+            std::cout << "Novo Destino > " << destAddress << endl;
+
+            std::ostringstream str;
+            str << packetName << "-" << numSent;
+            Packet *packet = new Packet(str.str().c_str());
+            const auto &payload = makeShared<PathPayload>();
+            activeFlows.insert(par("flowId"));
+            payload->setTarget(destAddress);
+            payload->setFlowId(par("flowId"));
+            payload->setChunkLength(B(par("messageLength")));
+            payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
+            //Path newPath(currentPath);
+            Path newPath;
+            newPath.push_back(localAddress);
+            payload->setPath(newPath);
+
+            payload->setListbandwith(lstBW);
+            payload->setReqAppOut(reqAppOut);
+            payload->setReqAppIn(reqAppIn);
+            payload->setPhase(++phase);
+
+            packet->insertAtBack(payload);
+            activeFlows.insert(par("flowId"));
+            queue.push(packet); // insere na fila de envios
+            if(!selfMsg->isScheduled()) { //Se nao ha nada previsto para envio, envia
+                std::cout << "nao ha nada previsto para envio! Agendando." << endl;
+                selfMsg->setKind(SEND);
+                simtime_t d = simTime() + par("sendInterval");
+                scheduleAt(d, selfMsg);
+            }
+        }
+    }
+
 }
 
 
 void BasicFloodProt::processForwardNode(Packet *pk){
+    std::cout << "*****processForwardNode*****" << endl;
+    const auto &payload2 = pk->removeAtBack();
+
+    //pk->insertAtBack(payload2);
+    const Ptr<PathPayload> &result = dynamicPtrCast<PathPayload>(payload2);
+    int flowId = result->getFlowId();
+    L3Address target = result->getTarget();
+    Path currentPath = result->getPath();
+    L3Address lastNeighbourNode = currentPath.back();
+    double reqAppOut = result->getReqAppOut();
+    double reqAppIn = result->getReqAppIn();
+    int phase = result->getPhase();
+
+    std::map<int,double> mapSumBW; // map (flowid, bw)
+    ListBandwidth lstBW;
+    if (mapSumBW.find(flowId) == mapSumBW.end()) { //verificar se flowId nao está no mapa
+        lstBW = result->getListbandwith(); //pega lista do ultimo pacote
+    }
+    else {
+        for (auto const& it : allEstdInfoList) {
+            if (it->getLastHost() == lastNeighbourNode && it->getCurrentHost() == localAddress) {
+                lstBW.push_back(*it); //senao add a lista a banda entre os dois pontos
+            }
+        }
+
+    }
+    double currentBw;
+    for (auto const& it : allEstdInfoList) { // recupera a banda atual
+        if (it->getLastHost() == lastNeighbourNode && it->getCurrentHost() == localAddress) {
+            currentBw = it->getBw();
+        }
+    }
+
+    //verifica se aresta se ponto B mais proximo que de C que A (BC<AC).
+    Coord lastNeighbourNodeCoord; //ponto A
+    Coord ownCoord = getMyPosition(); // ponto B
+    Coord targetCoord; // ponto C
+    cRegistrationList *allNodesInfoList = nodeinfo_s.getInstance();
+    for (int i=0; i<allNodesInfoList->size(); i++) {
+        NodeInfoSingleton *nodeInfo = static_cast<NodeInfoSingleton *>(allNodesInfoList->get(i));
+        if (nodeInfo->getIpaddr() == lastNeighbourNode) {
+            lastNeighbourNodeCoord = nodeInfo->getPosition(); //A
+            //std::cout << "host A: " << lastNeighbourNodeCoord << endl;
+        }
+        if (nodeInfo->getIpaddr() == target) {
+            targetCoord = nodeInfo->getPosition(); //C
+            //std::cout << "host C: " << targetCoord << endl;
+        }
+
+    }
+    bool isForwader = isNodeForwarder(lastNeighbourNodeCoord,ownCoord,targetCoord);
+    if (isForwader){
+        if (activeFlows.find(flowId) == activeFlows.end()) {
+            activeFlows.insert(flowId);
+            Path newPath(currentPath);
+            newPath.push_back(localAddress);
+            std::ostringstream str;
+            str << packetName << "-" << numSent;
+            Packet *packet = new Packet(str.str().c_str());
+            const auto &payload = makeShared<PathPayload>();
+            payload->setTarget(target);
+            payload->setFlowId(flowId);
+            payload->setPath(newPath);
+            payload->setChunkLength(B(par("messageLength")));
+            payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
+
+            payload->setListbandwith(lstBW);
+            payload->setReqAppOut(reqAppOut);
+            payload->setReqAppIn(reqAppIn);
+            payload->setPhase(phase);
+
+            packet->insertAtBack(payload);
+            queue.push(packet); // insere na fila de envios
+            if(!selfMsg->isScheduled()) { //Se nao ha nada previsto para envio, envia
+                selfMsg->setKind(SEND);
+                simtime_t d = simTime() + par("sendInterval");
+                scheduleAt(d, selfMsg);
+            }
+        }
+    }
+    else{
+        delete pk;
+        return;
+    }
 }
 
 
 void BasicFloodProt::processPacketRequest(Packet *pk){
-}
-
-void BasicFloodProt::processPacketReply(Packet *pk){
-}
-
-void BasicFloodProt::processPacketReserve(Packet *pk){
-}
-
-void BasicFloodProt::processPacket(Packet *pk) {
-    emit(packetReceivedSignal, pk);
-    EV_INFO << "Received packet: " << UdpSocket::getReceivedPacketInfo(pk) << endl;
-
+    std::cout << "*****processPacketRequest*****" << endl;
     const auto &payload2 = pk->removeAtBack();
     pk->insertAtBack(payload2);
     const Ptr<PathPayload> &result = dynamicPtrCast<PathPayload>(payload2);
     L3Address target = result->getTarget();
+    numReceived++;
+    if (localAddress == target) { // #inicio Eh destino?
+        processTargetNode(pk);
+    }
+    else { // Nao eh destino.
+        processForwardNode(pk);
+    } // #fim Eh destino?
+}
+
+
+
+void BasicFloodProt::processPacketReply(Packet *pk){
+
+}
+
+void BasicFloodProt::processPacketReserve(Packet *pk){
+
+}
+
+void BasicFloodProt::processPacket(Packet *pk) {
+    emit(packetReceivedSignal, pk);
+    EV_INFO << "Received packet: " << UdpSocket::getReceivedPacketInfo(pk)
+    << endl;
+
+
+    const auto &payload2 = pk->removeAtBack();
+    pk->insertAtBack(payload2);
+    const Ptr<PathPayload> &result = dynamicPtrCast<PathPayload>(payload2);
     int flowId = result->getFlowId();
     int phase = result->getPhase();
-    std::pair<int,int> flowIdPhase(flowId,phase);
+    std::pair<int,int> pairFlowIdPhase(flowId,phase); //
 
-    Path currentPath = result->getPath();
-    L3Address lastNeighbourNode = currentPath.back();
-
-    L3Address sourceAddress = getAddress(par("sourceAddress"));
-
-    //ListBandwidth listbandwith;
-    double reqAppOut = result->getReqAppOut();
-    double reqAppIn = result->getReqAppIn();
-
-
-    numReceived++;
-    if (localAddress != target) { //Nao eh destino
-        /*        if(localAddress == sourceAddress) {
-            std::cout << "Node de Origem: " << localAddress << endl;
-        }
-         */
-        if(activeFlows.find(flowIdPhase) == activeFlows.end()) {
-            // Verifica se se estah no caminho,
-            Coord lastNeighbourNodeCoord; //ponto A
-            Coord localNodeCoord = getMyPosition(); // ponto B
-            Coord targetNodeCoord; // ponto C
-            cRegistrationList *allNodesInfoList = nodeinfo_s.getInstance();
-            for (int i=0; i<allNodesInfoList->size(); i++) {
-                NodeInfoSingleton *nodeInfo = static_cast<NodeInfoSingleton *>(allNodesInfoList->get(i));
-                if (nodeInfo->getIpaddr() == lastNeighbourNode) {
-                    lastNeighbourNodeCoord = nodeInfo->getPosition(); //A
-                    //std::cout << "host A: " << lastNeighbourNodeCoord << endl;
-                }
-                if (nodeInfo->getIpaddr() == target) {
-                    targetNodeCoord = nodeInfo->getPosition(); //C
-                    //std::cout << "host C: " << targetCoord << endl;
-                }
-
-            }
-            bool isForwader = isNodeForwarder(lastNeighbourNodeCoord,localNodeCoord,targetNodeCoord);
-            if (isForwader) {
-                std::ostringstream str;
-                str << packetName << "-" << numSent;
-                Packet *packet = new Packet(str.str().c_str());
-                const auto &payload = makeShared<PathPayload>();
-
-                Path newPath(currentPath);
-                newPath.push_back(localAddress);
-                payload->setPath(newPath);
-                payload->setTarget(target);
-                payload->setFlowId(flowId);
-                //payload->setListbandwith(listbandwith);
-                payload->setReqAppOut(reqAppOut);
-                payload->setReqAppIn(reqAppIn);
-                payload->setPhase(phase);
-
-                payload->setChunkLength(B(par("messageLength")));
-                payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
-
-                packet->insertAtBack(payload);
-                queue.push(packet); // insere na fila de envios
-                if(!selfMsg->isScheduled()) { //Se nao ha nada previsto para envio, envia
-                    selfMsg->setKind(SEND);
-                    simtime_t d = simTime() + par("sendInterval");
-                    scheduleAt(d, selfMsg);
-                }
-            }
-            activeFlows.insert(flowIdPhase);
-        }
-    }
-    else { //Se for destino
-
-
-        std::pair<int,int> flowIdSent(flowId,phase);
-        if (flowIdSents.find(flowIdSent) == flowIdSents.end()){
-
-            std::cout <<"Banda: "<<currentBw<<endl;
-
-            if(activeFlows.find(flowIdPhase) == activeFlows.end()) {
-                for (auto const& it : allEstdInfoList) { // recupera a banda atual
-                    if (it->getLastHost() == lastNeighbourNode && it->getCurrentHost() == localAddress) {
-                        currentBw = it->getBw();
-                    }
-                }
-            }
-            else {
-                for (auto const& it : allEstdInfoList) { // recupera a banda atual
-                    if (it->getLastHost() == lastNeighbourNode && it->getCurrentHost() == localAddress) {
-                        currentBw = currentBw + it->getBw();
-                    }
-                }
-            }
-            activeFlows.insert(flowIdPhase);
-
-
-
-             // Se fase 1 Out se fase 2 In
-            if (result->getPhase() == 1) {
-                reqApp = result->getReqAppOut();
-            }
-            else if (result->getPhase() == 2)
-                reqApp = result->getReqAppIn();
-
-            std::cout <<"ReqAppOut: "<<result->getReqAppOut()<<"| ReqAppIn: "<<result->getReqAppIn()<<endl;
-            std::cout <<"Phase: "<< phase << "| Banda Requerida: " << reqApp << "| Banda atual: " << currentBw << "| Host: " << localAddress << endl;
-
-            if (currentBw >= reqApp && localAddress != sourceAddress) {
-                ///envia packet de volta
-                std::cout << "Caminho de ida Percorrido: " << endl; // #inicio Imprime caminho percorrido
-                std::for_each(currentPath.begin(), currentPath.end(), [](L3Address &addr) {
-                    std::cout << addr << " -> ";
-                }); std::cout << localAddress << endl;
-                std::cout << "***!Destino alcançado***" << endl;// #fim Imprime caminho percorrido
-
-
-                std::cout << "**Banda de ida: " << currentBw << " **" << endl;
-                std::cout << "*****Preparando a volta*****" << endl;
-                std::cout << "Nova Origem > " << localAddress << endl;
-                std::cout << "Novo Destino > " << sourceAddress << endl;
-
-                std::ostringstream str;
-                str << packetName << "-" << numSent;
-                Packet *packet = new Packet(str.str().c_str());
-                const auto &payload = makeShared<PathPayload>();
-
-                Path newPath;
-                newPath.push_back(localAddress);
-                payload->setPath(newPath);
-
-                payload->setTarget(sourceAddress);
-                payload->setFlowId(flowId);
-                //payload->setListbandwith(listbandwith);
-                payload->setReqAppOut(reqAppOut);
-                payload->setReqAppIn(reqAppIn);
-                payload->setPhase(++phase);
-
-                payload->setChunkLength(B(par("messageLength")));
-                payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
-
-                packet->insertAtBack(payload);
-                queue.push(packet); // insere na fila de envios
-                if(!selfMsg->isScheduled()) { //Se nao ha nada previsto para envio, envia
-                    selfMsg->setKind(SEND);
-                    simtime_t d = simTime() + par("sendInterval");
-                    scheduleAt(d, selfMsg);
-                }
-
-                flowIdSents.insert(flowIdSent);
-            }
-            else {
-                if (currentBw >= reqApp && localAddress == sourceAddress) {
-                    std::cout << "Reserva realizada com sucesso" << endl;
-                    flowIdSents.insert(flowIdSent);
-                    std::cout << "Caminho de volta Percorrido: " << endl; // #inicio Imprime caminho percorrido
-                    std::for_each(currentPath.begin(), currentPath.end(), [](L3Address &addr) {
-                        std::cout << addr << " -> ";
-                    }); std::cout << localAddress << endl;
-                }
+    switch (phase) {
+    case 1:
+        //verifica se está na lista
+        std::cout << "*****Phase 1*****" << localAddress << endl;
+        for (auto const& it : listFLowIdPhase){
+            if (it == pairFlowIdPhase){
+                std::cout << "*****Entra Phase 1*****" << endl;
+                //if(it.first == pairFlowIdPhase.first && it.second == pairFlowIdPhase.second) {
+                processPacketRequest(pk);
             }
         }
+        break;
+    case 2:
+        std::cout << "*****Phase 2*****" << endl;
+        for (auto const& it : listFLowIdPhase){
+            if(it.first == pairFlowIdPhase.first && it.second == pairFlowIdPhase.second) {
+                processPacketReply(pk);
+            }
+        }
+        break;
+    case 3:
+        for (auto const& it : listFLowIdPhase){
+            if(it.first == pairFlowIdPhase.first && it.second == pairFlowIdPhase.second) {
+                processPacketReserve(pk);
+            }
+        }
+        break;
+    default:
+        throw cRuntimeError("Invalid Phase %d !",
+                (int) phase);
     }
     delete pk;
-} // #fim processPacket
-
-
-
+}
 
 void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
     for (int i = 0; i < interfaceTable->getNumInterfaces(); i++) {
@@ -411,22 +488,19 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
                     localPort);
     setSocketOptions();
     if (par("enableSend")) {
-
-        /*L3Address result;
+        L3Address result;
         const char *dst = par("destAddress");
         L3AddressResolver().tryResolve(dst, result);
         if (result.isUnspecified())
             EV_ERROR << "cannot resolve destination address: " << dst << endl;
-        destAddress = result;*/
-
-        destAddress = getAddress(par("destAddress"));
+        destAddress = result;
         std::cout << "Destino > " << destAddress << endl;
         simtime_t start = std::max(startTime, simTime());
         selfMsg->setKind(START);
         scheduleAt(start, selfMsg);
         //host[1]
-        //par("destAddress").setStringValue("");
-        //par("enableSend").setBoolValue(false);
+        par("destAddress").setStringValue("");
+        par("enableSend").setBoolValue(false);
     }
 }
 
@@ -482,10 +556,6 @@ void BasicFloodProt::getAllEstdBw() {
     allEstdInfoList.push_back(estdTwoPoints);
     estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.10"),Ipv4Address("10.0.0.1"),0.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.3"),Ipv4Address("10.0.0.1"),10.0);
-    allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.3"),10.0);
-    allEstdInfoList.push_back(estdTwoPoints);
     //volta
     estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.2"),30.0);
     allEstdInfoList.push_back(estdTwoPoints);
@@ -495,21 +565,7 @@ void BasicFloodProt::getAllEstdBw() {
     allEstdInfoList.push_back(estdTwoPoints);
     estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.2"),10.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.1"),Ipv4Address("10.0.0.3"),0.0);
-    allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.3"),Ipv4Address("10.0.0.5"),0.0);
-    allEstdInfoList.push_back(estdTwoPoints);
 }
-
-
-L3Address BasicFloodProt::getAddress(const char *name){
-    L3Address addr;
-    L3AddressResolver().tryResolve(name, addr);
-    if (addr.isUnspecified())
-        EV_ERROR << "cannot resolve destination address: " << name << endl;
-    return addr;
-}
-
 
 } // namespace inet
 

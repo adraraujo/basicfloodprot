@@ -54,8 +54,12 @@ protected:
     simtime_t startTime;
     simtime_t stopTime;
     const char *packetName = nullptr;
-    std::set<int> activeFlows;
+    //std::set<int> activeFlows;
+    std::set<std::pair<int,int>> activeFlows;
+    std::set<std::pair<int,int>> flowIdSents;
     std::queue<Packet*> queue; //Fila de envio de pacotes
+    double currentBw;
+    double reqApp;
 
 
     // state
@@ -72,10 +76,10 @@ protected:
 private:
     BandwidthTwoPoints *estdTwoPoints;
     std::list<BandwidthTwoPoints*> allEstdInfoList;
-    std::list<std::pair<L3Address,double>> listIpBW;
+    //std::list<std::pair<L3Address,double>> listIpBW;
     std::map<int,double> mapSumBW; // map (flowid, bw)
     std::pair<int,int> pairFlowIdPhase; // map (flowid, phase)
-    std::list<std::pair<L3Address,double>>>
+    std::list<std::pair<int,int>> listFLowIdPhase;
     simtime_t timer, timer1, time2;
     //std::map<int,std::list<std::pair<L3Address,double>>> mapSumBW;
 protected:
@@ -110,9 +114,11 @@ protected:
     virtual void processPacketReply(Packet *msg);
     virtual void processPacketReserve(Packet *msg);
 
-    bool BasicFloodProt::isNodeForwader(Coord *A,Coord *B,Coord *C);
-    void BasicFloodProt::processForwardNode(Packet *msg);
-    void BasicFloodProt::processTargetNode(Packet *msg);
+    virtual bool isNodeForwarder(Coord A,Coord B,Coord C);
+    virtual void processForwardNode(Packet *msg);
+    virtual void processTargetNode(Packet *msg);
+
+    virtual L3Address getAddress(const char *name);
 
 
 
