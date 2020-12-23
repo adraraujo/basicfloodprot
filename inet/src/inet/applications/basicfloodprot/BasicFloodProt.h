@@ -18,7 +18,7 @@
 
 #ifndef __INET_BasicFloodProt_H
 #define __INET_BasicFloodProt_H //\
-    EXECUTE_ON_STARTUP(nodesinfosingleton.getInstance()->add(new NodeInfo()))
+EXECUTE_ON_STARTUP(nodesinfosingleton.getInstance()->add(new NodeInfo()))
 
 #include <vector>
 
@@ -34,6 +34,7 @@
 #include <map>
 #include "inet/common/geometry/common/Coord.h"
 #include <utility>
+#include "packets_m.h"
 
 namespace inet {
 
@@ -60,6 +61,8 @@ protected:
     std::queue<Packet*> queue; //Fila de envio de pacotes
     double currentBw;
     double reqApp;
+    simtime_t timeout;  // timeout
+    cMessage *timeoutEvent = nullptr;  // holds pointer to the timeout self-message
 
 
     // state
@@ -76,6 +79,7 @@ protected:
 private:
     BandwidthTwoPoints *estdTwoPoints;
     std::list<BandwidthTwoPoints*> allEstdInfoList;
+    ListBandwidth listBandwidth, listAuxBandwidth;
     //std::list<std::pair<L3Address,double>> listIpBW;
     std::map<int,double> mapSumBW; // map (flowid, bw)
     std::pair<int,int> pairFlowIdPhase; // map (flowid, phase)
@@ -110,13 +114,13 @@ protected:
     virtual Coord getMyPosition() const;
     virtual void getAllEstdBw();
 
-    virtual void processPacketRequest(Packet *msg);
-    virtual void processPacketReply(Packet *msg);
-    virtual void processPacketReserve(Packet *msg);
+    //virtual void processPacketRequest(Packet *msg);
+    //virtual void processPacketReply(Packet *msg);
+    //virtual void processPacketReserve(Packet *msg);
 
     virtual bool isNodeForwarder(Coord A,Coord B,Coord C);
-    virtual void processForwardNode(Packet *msg);
-    virtual void processTargetNode(Packet *msg);
+    //virtual void processForwardNode(Packet *msg);
+    //virtual void processTargetNode(Packet *msg);
 
     virtual L3Address getAddress(const char *name);
 

@@ -40,7 +40,7 @@ class PathPayload;
 using namespace inet;
 typedef std::vector<inet::L3Address> Path;
 #include "BandwidthTwoPoints.h"
-typedef std::list<BandwidthTwoPoints> ListBandwidth;
+typedef std::list<BandwidthTwoPoints*> ListBandwidth;
 // }}
 
 /**
