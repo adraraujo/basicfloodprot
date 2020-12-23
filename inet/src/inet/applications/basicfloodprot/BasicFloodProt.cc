@@ -145,8 +145,8 @@ void BasicFloodProt::processStop() {
 
 void BasicFloodProt::handleMessageWhenUp(cMessage *msg) {
     if (msg == timeoutEvent){
-        EV_WARN << "Timeout expirou, controle de admissao nao pode realizar a reserva\n";
-        std::cout << "Timeout expirou, controle de admissao nao pode realizar a reserva" << endl;
+        EV_WARN << "Timeout has expired, admission control cannot make reservation!\n";
+        std::cout << "Timeout has expired, admission control cannot make reservation!" << endl;
     }
     else {
         if (msg->isSelfMessage()) {
@@ -374,11 +374,11 @@ void BasicFloodProt::processPacket(Packet *pk) {
                 std::for_each(currentPath.begin(), currentPath.end(), [](L3Address &addr) {
                     std::cout << addr << " -> ";
                 }); std::cout << localAddress << endl;*/
-                std::cout << "***Destino alcançado!***" << endl;// #fim Imprime caminho percorrido
+                std::cout << "***Destination reached!***" << endl;// #fim Imprime caminho percorrido
 
-                std::cout << "*****Preparando a volta*****" << endl;
-                std::cout << "Nova Origem > " << localAddress << endl;
-                std::cout << "Novo Destino > " << sourceAddress << endl;
+                std::cout << "*****Preparing the return to original source.*****" << endl;
+                std::cout << "New source > " << localAddress << endl;
+                std::cout << "New Destination > " << sourceAddress << endl;
 
                 std::ostringstream str;
                 str << packetName << "-" << numSent;
@@ -422,21 +422,17 @@ void BasicFloodProt::processPacket(Packet *pk) {
             else {
                 if (currentBw >= reqApp && localAddress == sourceAddress) {
 
-                    std::cout <<"Cancelando timeout gerado na origem"<<endl;
+                    std::cout <<"Canceling timeout generated at source."<<endl;
                     cancelEvent(timeoutEvent);
 
-                    std::cout << "Consulta a rede realizada com sucesso" << endl;
+                    std::cout << "Successful network discovery." << endl;
 
                     flowIdSents.insert(flowIdSent);
-                    /*std::cout << "Caminho de volta Percorrido: " << endl; // #inicio Imprime caminho percorrido
-                    std::for_each(currentPath.begin(), currentPath.end(), [](L3Address &addr) {
-                        std::cout << addr << " -> ";
-                    }); std::cout << localAddress << endl;*/
 
                     listBandwidth.merge(listAuxBandwidth);
                     listBandwidth.unique();
                     for (auto const& it : listBandwidth) {
-                        std::cout << it->getLastHost() <<" -> "<<it->getCurrentHost()<<" : Banda: "<<it->getBw()<<endl;
+                        std::cout << it->getLastHost() <<" -> "<<it->getCurrentHost()<<" : bandwidth: "<<it->getBw()<<endl;
                     }
                 }
                 else {
@@ -465,7 +461,7 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
             cRegistrationList *allNodesInfoList = nodeinfo_s.getInstance();
             allNodesInfoList->add(ownNodeInfo);
             if (par("enableSend")){
-                std::cout << "Origem: > " << localAddress << endl;
+                std::cout << "Source: > " << localAddress << endl;
             }
         }
 
@@ -487,7 +483,7 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
         destAddress = result;*/
 
         destAddress = getAddress(par("destAddress"));
-        std::cout << "Destino > " << destAddress << endl;
+        std::cout << "Destination > " << destAddress << endl;
         simtime_t start = std::max(startTime, simTime());
         selfMsg->setKind(START);
         scheduleAt(start, selfMsg);
@@ -495,7 +491,7 @@ void BasicFloodProt::handleStartOperation(LifecycleOperation *operation) {
         //Criando timeout na origem
         timeout = 3.0;
         timeoutEvent = new cMessage("timeoutEvent");
-        std::cout <<"Criando timeout na origem."<<endl;
+        std::cout <<"Creating timeout at the source."<<endl;
         scheduleAt(simTime()+timeout, timeoutEvent);
 
         //host[1]
@@ -532,9 +528,9 @@ void BasicFloodProt::getAllEstdBw() {
     allEstdInfoList.push_back(estdTwoPoints);
     estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.1"),Ipv4Address("10.0.0.3"),10.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.1"),Ipv4Address("10.0.0.4"),20.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.1"),Ipv4Address("10.0.0.4"),30.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.1"),Ipv4Address("10.0.0.5"),30.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.1"),Ipv4Address("10.0.0.5"),20.0);
     allEstdInfoList.push_back(estdTwoPoints);
 
     estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.1"),0.0);
@@ -543,34 +539,34 @@ void BasicFloodProt::getAllEstdBw() {
     allEstdInfoList.push_back(estdTwoPoints);
     estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.4"),30.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.5"),50.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.5"),20.0);
     allEstdInfoList.push_back(estdTwoPoints);
 
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.3"),Ipv4Address("10.0.0.1"),10.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.3"),Ipv4Address("10.0.0.1"),20.0);
     allEstdInfoList.push_back(estdTwoPoints);
     estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.3"),Ipv4Address("10.0.0.2"),0.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.3"),Ipv4Address("10.0.0.4"),00.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.3"),Ipv4Address("10.0.0.4"),0.0);
     allEstdInfoList.push_back(estdTwoPoints);
     estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.3"),Ipv4Address("10.0.0.5"),20.0);
     allEstdInfoList.push_back(estdTwoPoints);
 
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.1"),20.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.1"),40.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.2"),30.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.2"),40.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.3"),00.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.3"),0.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.5"),00.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.4"),Ipv4Address("10.0.0.5"),0.0);
     allEstdInfoList.push_back(estdTwoPoints);
 
     estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.1"),30.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.2"),40.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.2"),30.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.3"),20.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.3"),10.0);
     allEstdInfoList.push_back(estdTwoPoints);
-    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.4"),00.0);
+    estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.5"),Ipv4Address("10.0.0.4"),0.0);
     allEstdInfoList.push_back(estdTwoPoints);
 
     /*estdTwoPoints = new BandwidthTwoPoints(Ipv4Address("10.0.0.2"),Ipv4Address("10.0.0.6"),0.0);
