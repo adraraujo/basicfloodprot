@@ -148,7 +148,7 @@ void BasicFloodProt::handleMessageWhenUp(cMessage *msg) {
         EV_WARN << "Timeout has expired, admission control cannot make reservation!\n";
         std::cout << "Timeout has expired, admission control cannot make reservation!" << endl;
     }
-    else { //Comment
+    else {
         if (msg->isSelfMessage()) {
             ASSERT(msg == selfMsg);
             switch (selfMsg->getKind()) {
