@@ -51,8 +51,8 @@ simple BasicFloodProt like IApp
         double startTime @unit(s) = default(1s); // application start time (start of the first packet)
         volatile double sendInterval @unit(s) = uniform(0.1s, 0.5s); // should usually be a random value, e.g. exponential(1)
         int flowId = default(-1);
-        double reqAppOut  @unit(Mbps) = default(-1.0Mbps);
-        double reqAppIn @unit(Mbps) = default(-1.0Mbps);
+        double reqAppOut  @unit(Kbps) = default(-1.0Kbps);
+        double reqAppIn @unit(Kbps) = default(-1.0Kbps);
         bool receiveBroadcast = default(true); // if true, makes the socket receive broadcast packets
         @display("i=block/app");
         @lifecycleSupport;
