@@ -83,7 +83,7 @@ private:
     //std::list<std::pair<L3Address,double>> listIpBW;
     std::map<int,double> mapSumBW; // map (flowid, bw)
     std::pair<int,int> pairFlowIdPhase; // map (flowid, phase)
-    std::list<std::pair<int,int>> listFLowIdPhase;
+    std::list<std::pair<int,int>> listFlowIdPhase;
     simtime_t timer, timer1, time2;
     //std::map<int,std::list<std::pair<L3Address,double>>> mapSumBW;
 protected:

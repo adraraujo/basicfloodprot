@@ -47,7 +47,7 @@ simple BasicFloodProt like IApp
         string localAddress = default("");
         string packetName = default("UdpBasicAppData");
         int destPort = default(5000);
-        volatile int messageLength @unit(B) = default(200B); // length of messages to generate, in bytes
+        volatile int messageLength @unit(B) = default(1B); // length of messages to generate, in bytes
         double startTime @unit(s) = default(1s); // application start time (start of the first packet)
         volatile double sendInterval @unit(s) = uniform(0.1s, 0.5s); // should usually be a random value, e.g. exponential(1)
         int flowId = default(-1);
